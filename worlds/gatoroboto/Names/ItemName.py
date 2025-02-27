@@ -1,0 +1,11 @@
+healthkit = "Healthkit"
+cartridge = "Cartridge"
+
+module_missile = "Missile Module"
+module_decoder = "Decoder Module"
+module_repeater = "Repeater Module"
+module_hopper = "Hopper Module"
+module_spinjump = "Spin Jump Module"
+module_coolant = "Coolant Module"
+module_phase = "Phase Module"
+module_bigshot = "Big Shot Module"
