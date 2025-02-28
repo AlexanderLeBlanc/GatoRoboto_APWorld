@@ -26,7 +26,11 @@ modules_item_data_table: Dict[str, GatoRobotoItemData] = {
 item_data_table: Dict[str, GatoRobotoItemData] = {
     **modules_item_data_table, 
     ItemName.cartridge: GatoRobotoItemData(gato_roboto_base_id + 0x8, ItemClassification.filler),
-    ItemName.healthkit: GatoRobotoItemData(gato_roboto_base_id + 0x9, ItemClassification.filler)
+    ItemName.healthkit: GatoRobotoItemData(gato_roboto_base_id + 0x9, ItemClassification.filler),
+    ItemName.progressive_treadmill: GatoRobotoItemData(gato_roboto_base_id + 0x10, ItemClassification.progression),
+    ItemName.progressive_hotboy: GatoRobotoItemData(gato_roboto_base_id + 0x11, ItemClassification.progression),
+    ItemName.hottubes_event: GatoRobotoItemData(gato_roboto_base_id + 0x12, ItemClassification.progression),
+    ItemName.progressive_vent: GatoRobotoItemData(gato_roboto_base_id + 0x13, ItemClassification.progression),
 }
 
 item_table = {name: data.code for name, data in item_data_table.items()}

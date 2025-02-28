@@ -54,10 +54,23 @@ module_location_data_table: Dict[str, str] = {
     LocationName.module_8: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 0x200 + 0x07),
 }
 
+event_location_data_table: Dict[str, str] = {
+    LocationName.treadmill_1: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 0x300 + 0x00),
+    LocationName.treadmill_2: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 0x300 + 0x01),
+    LocationName.treadmill_3: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 0x300 + 0x02),
+    LocationName.hotboy_1: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 0x300 + 0x03),
+    LocationName.hotboy_2: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 0x300 + 0x04),
+    LocationName.hottubes: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 0x300 + 0x05),
+    LocationName.vent_button_1: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 0x300 + 0x06),
+    LocationName.vent_button_2: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 0x300 + 0x07),
+    LocationName.vent_button_3: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 0x300 + 0x08),
+}
+
 location_data_table: Dict[str, str] = {
     **healthkit_location_data_table,
     **cartridge_location_data_table,
-    **module_location_data_table
+    **module_location_data_table,
+    **event_location_data_table
 }
 
 location_table = {name: data.address for name, data in location_data_table.items()}

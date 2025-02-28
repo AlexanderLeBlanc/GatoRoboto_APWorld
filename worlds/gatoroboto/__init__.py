@@ -4,7 +4,7 @@ from typing import Dict, List
 from BaseClasses import ItemClassification, Location, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
 from .Items import GatoRobotoItem, item_table, modules_item_data_table, item_data_table
-from .Locations import GatoRobotoLocation, location_table, location_data_table, healthkit_location_data_table, cartridge_location_data_table, module_location_data_table
+from .Locations import GatoRobotoLocation, location_table, location_data_table, healthkit_location_data_table, cartridge_location_data_table, module_location_data_table, event_location_data_table
 from .Names import ItemName, LocationName
 from .Options import GatoRobotoOptions, gatoroboto_option_groups
 
@@ -48,6 +48,10 @@ class GatoRobotoWorld(World):
         
         item_pool += [self.create_item(ItemName.cartridge) for x in range(14)]
         item_pool += [self.create_item(ItemName.healthkit) for x in range(10)]
+        item_pool += [self.create_item(ItemName.progressive_vent) for x in range(3)]
+        item_pool += [self.create_item(ItemName.progressive_hotboy) for x in range(2)]
+        item_pool += [self.create_item(ItemName.progressive_treadmill) for x in range(3)]
+        item_pool += [self.create_item(ItemName.hottubes_event)]
         self.multiworld.itempool += item_pool
         print("end create items?")
     
@@ -71,6 +75,10 @@ class GatoRobotoWorld(World):
             })
             region.add_locations({
                 location_name: location_data.address for location_name, location_data in module_location_data_table.items()
+                if location_data.region == region_name
+            })
+            region.add_locations({
+                location_name: location_data.address for location_name, location_data in event_location_data_table.items()
                 if location_data.region == region_name
             })
             

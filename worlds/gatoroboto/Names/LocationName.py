@@ -35,3 +35,18 @@ module_5 = "Spin Jump Module Location"
 module_6 = "Coolant Module Location"
 module_7 = "Phase Module Location"
 module_8 = "Big Shot Module Location"
+
+#Treadmill Locations
+treadmill_1 = "Treadmill 1"
+treadmill_2 = "Treadmill 2"
+treadmill_3 = "Treadmill 3"
+
+#Hotboy Locations
+hotboy_1 = "Hotboy 1"
+hotboy_2 = "Hotboy 2"
+hottubes = "Hot Tubes"
+
+#Vent Button Locations
+vent_button_1 = "Vent Button 1"
+vent_button_2 = "Vent Button 2"
+vent_button_3 = "Vent Button 3"
