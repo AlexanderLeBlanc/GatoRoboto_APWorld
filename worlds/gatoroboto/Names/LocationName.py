@@ -50,3 +50,6 @@ hottubes = "Hot Tubes"
 vent_button_1 = "Vent Button 1"
 vent_button_2 = "Vent Button 2"
 vent_button_3 = "Vent Button 3"
+
+#Final Boss
+final_boss = "Final Boss"

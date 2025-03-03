@@ -64,6 +64,7 @@ event_location_data_table: Dict[str, str] = {
     LocationName.vent_button_1: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 0x300 + 0x06),
     LocationName.vent_button_2: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 0x300 + 0x07),
     LocationName.vent_button_3: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 0x300 + 0x08),
+    LocationName.final_boss: GatoRobotoLocationData(RegionName.region_7, gatoroboto_base_id + 0x400 + 0x00)
 }
 
 location_data_table: Dict[str, str] = {
