@@ -29,21 +29,32 @@ class GatoRobotoContext(CommonContext):
     tags = {"AP", "Online"}
     game = "Gato Roboto"
     command_processor = GatoRobotoCommandProcessor
-    save_game_folder = os.path.expandvars(r"%localappdata%/UNDERTALE")
+    save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
     
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
         self.game = "Gato Roboto"
         self.syncing = False
         
-        # self.save_game_folder: files go in this path to pass data between us and the actual game
-        self.save_game_folder = os.path.expandvars(r"%localappdata%/UNDERTALE")
+        # Magical item handling value that I don't understand
+        self.items_handling = 0b111
         
+        # self.save_game_folder: Files go in this path to pass data between us and the actual game
+        self.save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
+
+    async def server_auth(self, password_requested: bool = False):
+        if password_requested and not self.password:
+            await super().server_auth(password_requested)
+
+        await self.get_username()
+        await self.send_connect()
+
     def on_package(self, cmd, args):
         print('SOMETHING: ' + str(cmd))
         
         if (cmd == 'Connected'):
             print('HELL YEE')
+            self.game = self.slot_info[self.slot].game
         
         async_start(process_gatoroboto_cmd(self, cmd, args))
         
@@ -86,15 +97,27 @@ async def game_watcher(ctx: GatoRobotoContext):
     print(ret)
     #await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [10000]}])
         #print("Sent Items: " + str(rply))
-        
+
+# Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
+# Not sure if we are overriding it or just executing our own code alongside it
 async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
     if cmd == "Connected":
+        # Do all file init here
         print("CONNECTED SHII")
-    if cmd == "RoomInfo":
+    elif cmd == "RoomInfo":
+        # Probably not necessary from looking at other clients
         print("Info: " + str(ctx.seed_name) + " : " + str(args["seed_name"]))
-    if cmd == "ReceivedItems":
+    elif cmd == "LocationInfo":
+        # Potentially for hinting?
+        print("Loc. Info: " + str(args["locations"]))
+    elif cmd == "RoomUpdate":
+        # Update checked locations in files for game
+        print("Room Updates")
+    elif cmd == "ReceivedItems":
+        # Big logical state machine to track item index into what item gets written to file
         print("GOT SOME ITEMS")
         print(str(args["items"]))
+        ctx.watcher_event.set()
         
 def main():
     Utils.init_logging("GatoRobotoClient", exception_logger="Client")
