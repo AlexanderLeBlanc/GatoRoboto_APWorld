@@ -8,6 +8,8 @@ from .Names import RegionName
 from .Names import ItemName
 from .Names import LocationName
 
+from .Locations import GatoRobotoLocation
+
 def set_rules(world: GatoRobotoWorld):    
     #Set Checks for Landing Site
     set_rule(world.get_location(LocationName.healthkit_2),

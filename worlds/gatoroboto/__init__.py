@@ -7,6 +7,18 @@ from .Items import GatoRobotoItem, item_table, modules_item_data_table, item_dat
 from .Locations import GatoRobotoLocation, location_table, location_data_table, healthkit_location_data_table, cartridge_location_data_table, module_location_data_table, event_location_data_table
 from .Names import ItemName, LocationName
 from .Options import GatoRobotoOptions, gatoroboto_option_groups
+from multiprocessing import Process
+from worlds.LauncherComponents import Component, components
+
+from .Names import RegionName
+
+def run_client():
+    print('running gatoroboto client')
+    from GatoRobotoClient import main  # lazy import
+    p = Process(target=main)
+    p.start()
+
+components.append(Component("Gato Roboto Client", "GatoRobotoClient"))
 
 class GatoRobotoWebWorld(WebWorld):
     theme = "ice"
@@ -53,6 +65,7 @@ class GatoRobotoWorld(World):
         item_pool += [self.create_item(ItemName.progressive_treadmill) for x in range(3)]
         item_pool += [self.create_item(ItemName.hottubes_event)]
         self.multiworld.itempool += item_pool
+        
         print("end create items?")
     
     def create_regions(self) -> None:
@@ -62,6 +75,9 @@ class GatoRobotoWorld(World):
             region = Region(region_name, self.player, self.multiworld)
             self.multiworld.regions.append(region)
             
+        for loc_name, loc_data in healthkit_location_data_table.items():
+            print("Healtkit region: " + str(loc_data.region))
+        
         #Create locations
         for region_name, region_data in region_data_table.items():
             region = self.multiworld.get_region(region_name, self.player)
@@ -83,6 +99,18 @@ class GatoRobotoWorld(World):
             })
             
             region.add_exits(region_data_table[region_name].connecting_regions)
+            
+            print(f"Region: {region_name}, Size: {len(region.locations)}")
+            if region_name == RegionName.region_2:
+                for location in region.locations:
+                    print("Location Info for Region: " + str(location.name))
+        
+        #Victory logic
+        victory_region = self.get_region(RegionName.region_7)
+        victory_location = GatoRobotoLocation(self.player, "Gary Defeated", None, victory_region)
+        victory_location.place_locked_item(GatoRobotoItem("Victory",  ItemClassification.progression, None, self.player))
+        self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
+        victory_region.locations.append(victory_location)
             
     def get_filler_item_name(self):
         return ItemName.healthkit
