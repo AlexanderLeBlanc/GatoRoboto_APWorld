@@ -42,9 +42,9 @@ treadmill_2 = "Treadmill 2"
 treadmill_3 = "Treadmill 3"
 
 #Hotboy Locations
-hotboy_1 = "Hotboy 1"
-hotboy_2 = "Hotboy 2"
-hottubes = "Hot Tubes"
+hotboy_1 = "Progressive Heater Event 1"
+hotboy_2 = "Progressive Heater Event 2"
+hotboy_3 = "Progressive Heater Event 3"
 
 #Vent Button Locations
 vent_button_1 = "Vent Button 1"

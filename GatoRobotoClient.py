@@ -25,11 +25,6 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
     def __init__(self, ctx):
         super().__init__(ctx) 
 
-
-            
-
-            
-
 class GatoRobotoContext(CommonContext):
     tags = {"AP", "Online"}
     game = "Gato Roboto"

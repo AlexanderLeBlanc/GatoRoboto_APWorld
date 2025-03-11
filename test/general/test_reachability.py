@@ -48,6 +48,8 @@ class TestBase(unittest.TestCase):
         for game_name, world_type in AutoWorldRegister.world_types.items():
             unreachable_regions = self.default_settings_unreachable_regions.get(game_name, set())
             with self.subTest("Game", game=game_name):
+                if game_name == "Gato Roboto":
+                    print("here yall")
                 multiworld = setup_solo_multiworld(world_type)
                 state = multiworld.get_all_state(False)
                 for location in multiworld.get_locations():

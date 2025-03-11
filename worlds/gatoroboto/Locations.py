@@ -60,7 +60,7 @@ event_location_data_table: Dict[str, str] = {
     LocationName.treadmill_3: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 300 + 2),
     LocationName.hotboy_1: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 3),
     LocationName.hotboy_2: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 4),
-    LocationName.hottubes: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 5),
+    LocationName.hotboy_3: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 5),
     LocationName.vent_button_1: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 6),
     LocationName.vent_button_2: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 7),
     LocationName.vent_button_3: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 8)
