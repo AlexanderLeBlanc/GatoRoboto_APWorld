@@ -37,16 +37,16 @@ module_7 = "Phase Module Location"
 module_8 = "Big Shot Module Location"
 
 #Treadmill Locations
-treadmill_1 = "Treadmill 1"
-treadmill_2 = "Treadmill 2"
-treadmill_3 = "Treadmill 3"
+aqueduct_1 = "Progressive Aqueducts 1"
+aqueduct_2 = "Progressive Aqueducts 2"
+aqueduct_3 = "Progressive Aqueducts 3"
 
 #Hotboy Locations
-hotboy_1 = "Progressive Heater Event 1"
-hotboy_2 = "Progressive Heater Event 2"
-hotboy_3 = "Progressive Heater Event 3"
+heater_1 = "Progressive Heater Core 1"
+heater_2 = "Progressive Heater Core 2"
+heater_3 = "Progressive Heater Core 3"
 
 #Vent Button Locations
-vent_button_1 = "Vent Button 1"
-vent_button_2 = "Vent Button 2"
-vent_button_3 = "Vent Button 3"
+vent_1 = "Progressive Ventilation 1"
+vent_2 = "Progressive Ventilation 2"
+vent_3 = "Progressive Ventilation 3"

@@ -59,9 +59,10 @@ class GatoRobotoWorld(World):
         
         item_pool += [self.create_item(ItemName.cartridge) for x in range(14)]
         item_pool += [self.create_item(ItemName.healthkit) for x in range(10)]
+        item_pool += [self.create_item(ItemName.progressive_aqueduct) for x in range(3)]
+        item_pool += [self.create_item(ItemName.progressive_heater) for x in range(3)]
         item_pool += [self.create_item(ItemName.progressive_vent) for x in range(3)]
-        item_pool += [self.create_item(ItemName.progressive_hotboy) for x in range(3)]
-        item_pool += [self.create_item(ItemName.progressive_treadmill) for x in range(3)]
+        
         self.multiworld.itempool += item_pool
         
         print("end create items?")

@@ -55,15 +55,15 @@ module_location_data_table: Dict[str, str] = {
 }
 
 event_location_data_table: Dict[str, str] = {
-    LocationName.treadmill_1: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 300 + 0),
-    LocationName.treadmill_2: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 300 + 1),
-    LocationName.treadmill_3: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 300 + 2),
-    LocationName.hotboy_1: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 3),
-    LocationName.hotboy_2: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 4),
-    LocationName.hotboy_3: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 5),
-    LocationName.vent_button_1: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 6),
-    LocationName.vent_button_2: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 7),
-    LocationName.vent_button_3: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 8)
+    LocationName.aqueduct_1: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 300 + 0),
+    LocationName.aqueduct_2: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 300 + 1),
+    LocationName.aqueduct_3: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 300 + 2),
+    LocationName.heater_1: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 3),
+    LocationName.heater_2: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 4),
+    LocationName.heater_3: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 300 + 5),
+    LocationName.vent_1: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 6),
+    LocationName.vent_2: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 7),
+    LocationName.vent_3: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 300 + 8)
 }
 
 location_data_table: Dict[str, str] = {

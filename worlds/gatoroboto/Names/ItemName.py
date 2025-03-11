@@ -1,9 +1,9 @@
 healthkit = "Healthkit"
 cartridge = "Cartridge"
 
-progressive_treadmill = "Treadmill Event"
-progressive_hotboy = "Progressive Heater Event"
-progressive_vent = "Vent Button Event"
+progressive_aqueduct = "Progressive Aqueducts Event"
+progressive_heater = "Progressive Heater Core Event"
+progressive_vent = "Progressive Ventilation Event"
 
 module_missile = "Missile Module"
 module_decoder = "Decoder Module"
