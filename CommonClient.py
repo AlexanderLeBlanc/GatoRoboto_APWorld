@@ -923,6 +923,7 @@ async def process_server_cmd(ctx: CommonContext, args: dict):
             raise Exception('Connection refused by the multiworld host, no reason provided')
 
     elif cmd == 'Connected':
+        print("I HATH CONNECT")
         ctx.username = ctx.auth
         ctx.team = args["team"]
         ctx.slot = args["slot"]

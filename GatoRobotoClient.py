@@ -5,6 +5,7 @@ import asyncio
 import typing
 import bsdiff4
 import shutil
+import json
 
 import Utils
 
@@ -88,22 +89,37 @@ class GatoRobotoContext(CommonContext):
         
 async def game_watcher(ctx: GatoRobotoContext):
     """placeholder"""
-    await asyncio.sleep(20)
+    """await asyncio.sleep(20)
     print("starting send")
     #while not ctx.exit_event.is_set():
     print(f"Server Locations: {ctx.server_locations}")
     print(f"Server Locations Size: {len(ctx.server_locations)}")
     ret = await ctx.check_locations([10000])
-    print(ret)
-    #await ctx.send_msgs([{"cmd": "LocationChecks", "locations": [10000]}])
-        #print("Sent Items: " + str(rply))
+    print(ret)"""
+    
+    #while not ctx.exit_event.is_set():
+    """Watch game json"""
 
 # Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
 # Not sure if we are overriding it or just executing our own code alongside it
 async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
     if cmd == "Connected":
-        # Do all file init here
         print("CONNECTED SHII")
+        
+        # Do all file init here
+        if not os.path.exists(ctx.save_game_folder):
+            os.mkdir(ctx.save_game_folder)
+        
+        if not os.path.exists(ctx.save_game_folder + "/game_comms.json"):
+            game_comms = '{ "cur_message": "", "message_is_stale": "true", "vars_out": { "10408": "false", "11812": "false", "11014": "false", "12314": "false", "10405": "false", "11606": "false", "10417": "false", "11713": "false", "10915": "false", "12413": "false", "10710": "false", "11810": "false", "11214": "false", "11413": "false", "12113": "false", "11106": "false", "10707": "false", "12105": "false", "11119": "false", "10414": "false", "11915": "false", "11613": "false", "10517": "false", "11514": "false", "10814": "false", "10807": "false", "11716": "false", "21716": "false", "12410": "false", "10113": "false", "11114": "false", "11718": "false", "10204": "false", "11503": "false", "11908": "false", "10019": "false", "10313": "false", "10015": "false", "11112": "false", "11122": "false", "10521": "false" }, "vars_in": { "10212": 0, "10211": 0, "10209": 0, "10214": 0, "10210": 0, "10216": 0, "10213": 0, "10215": 0, "10217": 0, "10208": 0, "10237": 0, "10254": 0, "10002": 0 } }'
+            game_comms_json = json.loads(game_comms)
+            print(str(game_comms_json))
+            
+            with open(ctx.save_game_folder + "/game_comms.json", 'w') as f:
+                json.dump(game_comms_json, f, indent=4)
+            
+        else:
+            """reset state and update from server"""
     elif cmd == "RoomInfo":
         # Probably not necessary from looking at other clients
         print("Info: " + str(ctx.seed_name) + " : " + str(args["seed_name"]))
