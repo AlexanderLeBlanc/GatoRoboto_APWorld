@@ -264,7 +264,6 @@ def get_clean_game_comms_file(f):
         
     return cleaned_json
 
-#Update cartidge ids
 #Set up message and stale
 #Set up patching
 #fix yaml gen

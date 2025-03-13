@@ -2,7 +2,7 @@ from typing import List
 
 from BaseClasses import ItemClassification, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
-from .Items import GatoRobotoItem, item_table, modules_item_data_table, item_data_table
+from .Items import GatoRobotoItem, item_table, modules_item_data_table, cartidges_item_data_table, item_data_table
 from .Locations import GatoRobotoLocation, location_table, healthkit_location_data_table, cartridge_location_data_table, module_location_data_table, event_location_data_table
 from .Names import ItemName
 from .Options import GatoRobotoOptions, gatoroboto_option_groups
@@ -56,8 +56,9 @@ class GatoRobotoWorld(World):
         item_count: 32
         item_pool += [self.create_item(name) 
                       for name in modules_item_data_table.keys()]
+        item_pool += [self.create_item(name) 
+                for name in cartidges_item_data_table.keys()]
         
-        item_pool += [self.create_item(ItemName.cartridge) for x in range(14)]
         item_pool += [self.create_item(ItemName.healthkit) for x in range(10)]
         item_pool += [self.create_item(ItemName.progressive_aqueduct) for x in range(3)]
         item_pool += [self.create_item(ItemName.progressive_heater) for x in range(3)]

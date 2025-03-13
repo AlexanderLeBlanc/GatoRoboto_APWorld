@@ -36,9 +36,21 @@ def set_rules(world: GatoRobotoWorld):
     set_rule(world.get_location(LocationName.cartridge_5), 
              lambda state: state.has(ItemName.progressive_vent, world.player, 3) or world.options.logic_difficulty == 1)
     set_rule(world.get_location(LocationName.module_3), 
-             lambda state: state.has(ItemName.cartridge, world.player, 7))
+             lambda state: sum(state.has(item, world.player) for item in [
+                ItemName.cartridge_1, ItemName.cartridge_2, ItemName.cartridge_3,
+                ItemName.cartridge_4, ItemName.cartridge_5, ItemName.cartridge_6,
+                ItemName.cartridge_7, ItemName.cartridge_8, ItemName.cartridge_9,
+                ItemName.cartridge_10, ItemName.cartridge_11, ItemName.cartridge_12,
+                ItemName.cartridge_13, ItemName.cartridge_14
+             ]) >= 7)
     set_rule(world.get_location(LocationName.module_4), 
-             lambda state: state.has(ItemName.cartridge, world.player, 14))
+             lambda state: sum(state.has(item, world.player) for item in [
+                ItemName.cartridge_1, ItemName.cartridge_2, ItemName.cartridge_3,
+                ItemName.cartridge_4, ItemName.cartridge_5, ItemName.cartridge_6,
+                ItemName.cartridge_7, ItemName.cartridge_8, ItemName.cartridge_9,
+                ItemName.cartridge_10, ItemName.cartridge_11, ItemName.cartridge_12,
+                ItemName.cartridge_13, ItemName.cartridge_14
+             ]) >= 14)
     
     #Set Checks for Aquaducts
     set_rule(world.get_location(LocationName.healthkit_5), 
