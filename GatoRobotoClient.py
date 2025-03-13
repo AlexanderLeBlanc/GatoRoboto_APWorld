@@ -31,6 +31,7 @@ class GatoRobotoContext(CommonContext):
     game = "Gato Roboto"
     command_processor = GatoRobotoCommandProcessor
     save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
+    checks_to_consume = []
     
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
@@ -98,22 +99,24 @@ async def game_watcher(ctx: GatoRobotoContext):
     while not ctx.exit_event.is_set():
         await asyncio.sleep(0.1)
         """Watch game json"""
-        get_clean_game_comms_file(ctx.save_game_folder + "/game_comms.json")
-        with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-            game_comms = dict(json.load(f))
-            
-            sending = []
-            
-            for key in game_comms:
-                if str(key).isdigit() and not str(game_comms[str(key)]).isdigit():
-                    #print("test: " + str(ctx.missing_locations.__contains__(str(key))) + " // " + str(bool(game_comms[str(key)])))
-                    if ctx.missing_locations.__contains__(int(key)) and bool(game_comms[str(key)]):
-                        #print("Found an item to send")
-                        sending.append(int(key))
-            
-            if len(sending) != 0:
-                "SENDING ITEM YOOO"
-                await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
+        if os.path.exists(ctx.save_game_folder + "/game_comms.json"):
+            with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
+                game_comms = get_clean_game_comms_file(f)
+                
+                sending = []
+                
+                for key in game_comms:
+                    if str(key).isdigit() and not str(game_comms[str(key)]).isdigit():
+                        #print("test: " + str(ctx.missing_locations.__contains__(str(key))) + " // " + str(bool(game_comms[str(key)])))
+                        if ctx.missing_locations.__contains__(int(key)) and int(game_comms[str(key)]) > 0:
+                            #print("Found an item to send")
+                            sending.append(int(key))
+                
+                if len(sending) != 0:
+                    "SENDING ITEM YOOO"
+                    await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
+
+                f.close()
                         
 
 # Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
@@ -126,40 +129,101 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
         if not os.path.exists(ctx.save_game_folder):
             os.mkdir(ctx.save_game_folder)
         
+        #Check if exists, if it doesnt make a json
         if not os.path.exists(ctx.save_game_folder + "/game_comms.json"):
-            game_comms = '{ "cur_message": "", "message_is_stale": {False}, "10408": {False}, "11812": {False}, "11014": {False}, "12314": {False}, "10405": {False}, "11606": {False}, "10417": {False}, "11713": {False}, "10915": {False}, "12413": {False}, "10710": {False}, "11810": {False}, "11214": {False}, "11413": {False}, "12113": {False}, "11106": {False}, "10707": {False}, "12105": {False}, "11119": {False}, "10414": {False}, "11915": {False}, "11613": {False}, "10517": {False}, "11514": {False}, "10814": {False}, "10807": {False}, "11716": {False}, "21716": {False}, "12410": {False}, "10113": {False}, "11114": {False}, "11718": {False}, "10204": {False}, "11503": {False}, "11908": {False}, "10019": {False}, "10313": {False}, "10015": {False}, "11112": {False}, "11122": {False}, "10521": {False}, "10212": {0}, "10211": {0}, "10209": {0}, "10214": {0}, "10210": {0}, "10216": {0}, "10213": {0}, "10215": {0}, "10217": {0}, "10208": {0}, "10237": {0}, "10254": {0}, "10002": {0} }'
-            game_comms_json = json.loads(game_comms)
+            game_comms = { 
+                "cur_message": "", 
+                "message_is_stale": 1,
+                "current_item_index": "",
+                "prev_item_index": "",  
+                "10408": 0, 
+                "11812": 0, 
+                "11014": 0, 
+                "12314": 0, 
+                "10405": 0, 
+                "11606": 0, 
+                "10417": 0, 
+                "11713": 0, 
+                "10915": 0, 
+                "12413": 0, 
+                "10710": 0, 
+                "11810": 0, 
+                "11214": 0, 
+                "11413": 0, 
+                "12113": 0, 
+                "11106": 0, 
+                "10707": 0, 
+                "12105": 0, 
+                "11119": 0, 
+                "10414": 0, 
+                "11915": 0, 
+                "11613": 0, 
+                "10517": 0, 
+                "11514": 0, 
+                "10814": 0, 
+                "10807": 0, 
+                "11716": 0, 
+                "21716": 0, 
+                "12410": 0, 
+                "10113": 0, 
+                "11114": 0, 
+                "11718": 0, 
+                "10204": 0, 
+                "11503": 0, 
+                "11908": 0, 
+                "10019": 0, 
+                "10313": 0, 
+                "10015": 0, 
+                "11112": 0, 
+                "11122": 0, 
+                "10521": 0, 
+                "10212": 0, 
+                "10211": 0, 
+                "10209": 0, 
+                "10214": 0, 
+                "10210": 0, 
+                "10216": 0, 
+                "10213": 0, 
+                "10215": 0, 
+                "10217": 0, 
+                "10208": 0, 
+                "10237": 0, 
+                "10254": 0, 
+                "10262": 0 
+            }
+            game_comms_json = json.dumps(game_comms, indent=4)
             
             with open(ctx.save_game_folder + "/game_comms.json", 'w') as f:
-                json.dump(game_comms_json, f, indent=4)
+                f.write(game_comms_json)
+                f.close()
+        #Check if exists, if it does restore json to initial values, don't mark as dirty yet
         else:
             """reset state"""
-            get_clean_game_comms_file(ctx.save_game_folder + "/game_comms.json")
             with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-                game_comms_json = dict(json.load(f))
+                game_comms_json = get_clean_game_comms_file(f)
             
                 for key in game_comms_json:
-                    if str(key).isdigit() and not str(game_comms_json[str(key)]).isdigit():
-                        game_comms_json[key] = False
-                    elif str(key).isdigit() and str(game_comms_json[str(key)]).isdigit():
+                    if str(key).isdigit():
                         game_comms_json[key] = 0
                     
                 game_comms_json["cur_message"] = ""
-                game_comms_json["message_is_stale"] = "true"
+                game_comms_json["message_is_stale"] = 0
                 
                 f.seek(0)
                 f.truncate()
                 json.dump(game_comms_json, f, indent=4) 
+                f.close()
                 
-        """update with server values, items get sent in ReceivedItems initially"""
+        """update with server values, items get sent in ReceivedItems initially"""        
         with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-            game_comms_json = dict(json.load(f))
+            game_comms_json = get_clean_game_comms_file(f)
             for loc in set(args["checked_locations"]):
-                game_comms_json[str(loc)] = True
+                game_comms_json[str(loc)] = 1
             
             f.seek(0)
             f.truncate()
-            json.dump(game_comms_json, f, indent=4)               
+            json.dump(game_comms_json, f, indent=4)   
+            f.close()    
     elif cmd == "RoomInfo":
         # Probably not necessary from looking at other clients
         print("Info: " + str(ctx.seed_name) + " : " + str(args["seed_name"]))
@@ -185,47 +249,65 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                 sync_msg.append({"cmd": "LocationChecks",
                                  "locations": list(ctx.locations_checked)})
             await ctx.send_msgs(sync_msg)
+        
+        #if 
         if start_index == len(ctx.items_received):
-            get_clean_game_comms_file(ctx.save_game_folder + "/game_comms.json")
-            with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-                game_comms_json = json.load(f)
-                
-                for item_slot in dict(game_comms_json):
-                    if str(game_comms_json[item_slot]).isdigit() and game_comms_json[item_slot] > 0:
-                        game_comms_json[item_slot] = 0
-                
-                for item in args["items"]:
-                    net_item = NetworkItem(*item)
-                    game_comms_json[str(net_item.item)] = int(game_comms_json[str(net_item.item)]) + 1
-                
-                f.seek(0)
-                f.truncate()
-                json.dump(game_comms_json, f, indent=4)
+            if os.path.exists(ctx.save_game_folder + "/game_comms.json"):
+                with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
+                    game_comms_json = get_clean_game_comms_file(f)
+                    
+                    game_comms_json["current_item_index"] = str(start_index)
+                    
+                    for item_slot in dict(game_comms_json):
+                        if str(game_comms_json[item_slot]).isdigit() and game_comms_json[item_slot] > 0:
+                            game_comms_json[item_slot] = 0
+                    
+                    for item in args["items"]:
+                        net_item = NetworkItem(*item)
+                        game_comms_json[str(net_item.item)] = int(game_comms_json[str(net_item.item)]) + 1
+                    
+                    f.seek(0)
+                    f.truncate()
+                    json.dump(game_comms_json, f, indent=4)
+                    
+                    f.close()
+            
 
-def get_clean_game_comms_file(file_path):
+import os
+import json
+
+def get_clean_game_comms_file(f):
     """
     Reads a JSON file, removes any trailing or embedded null characters (\x00),
-    and ensures the file is valid JSON before returning its contents.
+    and ensures the file is valid JSON before saving the cleaned version.
     """
-    if os.path.exists(file_path):
-        with open(file_path, "r+", encoding="utf-8") as f:
-            content = f.read()
+    content = f.read()
 
-            # Remove any null characters (\x00) at the end or inside the file
-            cleaned_content = content.replace("\x00", "")
+    cleaned_content = content.replace("\x00", "").strip()
 
-            # Only overwrite if changes were made
-            if content != cleaned_content:
-                f.seek(0)
-                f.truncate()
-                f.write(cleaned_content)
-    else:
-        print(f"Error: File does not exist -> {file_path}")
-        return None
+    if not cleaned_content.endswith("}"):
+        cleaned_content += "}"
+
+    try:
+        cleaned_json = json.loads(cleaned_content)
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON file, unable to fix.")
+        return
+    
+    if content != cleaned_content:
+        f.seek(0)
+        f.truncate()
+        f.write(cleaned_content)
+        print("JSON file cleaned successfully.")
+        
+    return cleaned_json
 
 #Update cartidge ids
 #Set up message and stale
 #Set up patching
+#fix yaml gen
+#make mrkdown for webworld
+#fix json gen
                     
 def main():
     Utils.init_logging("GatoRobotoClient", exception_logger="Client")
