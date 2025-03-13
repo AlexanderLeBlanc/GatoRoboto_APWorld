@@ -32,6 +32,7 @@ class GatoRobotoContext(CommonContext):
     command_processor = GatoRobotoCommandProcessor
     save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
     checks_to_consume = []
+    cur_start_index = 0
     
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
@@ -99,16 +100,19 @@ async def game_watcher(ctx: GatoRobotoContext):
     while not ctx.exit_event.is_set():
         await asyncio.sleep(0.1)
         """Watch game json"""
-        if os.path.exists(ctx.save_game_folder + "/game_comms.json"):
-            with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-                game_comms = get_clean_game_comms_file(f)
+        if os.path.exists(ctx.save_game_folder + "/locations.json"):   
+            with open(ctx.save_game_folder + "/locations.json", 'r+') as f:
+                locations_in = get_clean_game_comms_file(f)
                 
                 sending = []
                 
-                for key in game_comms:
-                    if str(key).isdigit() and not str(game_comms[str(key)]).isdigit():
-                        #print("test: " + str(ctx.missing_locations.__contains__(str(key))) + " // " + str(bool(game_comms[str(key)])))
-                        if ctx.missing_locations.__contains__(int(key)) and int(game_comms[str(key)]) > 0:
+                print("Missing Locations")
+                print(ctx.missing_locations)
+                
+                for key in locations_in:
+                    if str(key).isdigit():
+                        print("Location check: " + str(key) + " // " + str(ctx.missing_locations.__contains__(int(key))) + " // " + str(int(locations_in[str(key)]) > 0))
+                        if ctx.missing_locations.__contains__(int(key)) and int(locations_in[str(key)]) > 0:
                             #print("Found an item to send")
                             sending.append(int(key))
                 
@@ -117,66 +121,15 @@ async def game_watcher(ctx: GatoRobotoContext):
                     await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
 
                 f.close()
-                        
-
-# Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
-# Not sure if we are overriding it or just executing our own code alongside it
-async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
-    if cmd == "Connected":
-        print("CONNECTED SHII")
-        
-        # Do all file init here
-        if not os.path.exists(ctx.save_game_folder):
-            os.mkdir(ctx.save_game_folder)
-        
-        #Check if exists, if it doesnt make a json
-        if not os.path.exists(ctx.save_game_folder + "/game_comms.json"):
-            game_comms = { 
+            
+            os.remove(ctx.save_game_folder + "/locations.json")
+                
+        if len(ctx.checks_to_consume) > 0 and not os.path.exists(ctx.save_game_folder + "/items.json"):
+            items_in = { 
                 "cur_message": "", 
                 "message_is_stale": 1,
                 "current_item_index": "",
                 "prev_item_index": "",  
-                "10408": 0, 
-                "11812": 0, 
-                "11014": 0, 
-                "12314": 0, 
-                "10405": 0, 
-                "11606": 0, 
-                "10417": 0, 
-                "11713": 0, 
-                "10915": 0, 
-                "12413": 0, 
-                "10710": 0, 
-                "11810": 0, 
-                "11214": 0, 
-                "11413": 0, 
-                "12113": 0, 
-                "11106": 0, 
-                "10707": 0, 
-                "12105": 0, 
-                "11119": 0, 
-                "10414": 0, 
-                "11915": 0, 
-                "11613": 0, 
-                "10517": 0, 
-                "11514": 0, 
-                "10814": 0, 
-                "10807": 0, 
-                "11716": 0, 
-                "21716": 0, 
-                "12410": 0, 
-                "10113": 0, 
-                "11114": 0, 
-                "11718": 0, 
-                "10204": 0, 
-                "11503": 0, 
-                "11908": 0, 
-                "10019": 0, 
-                "10313": 0, 
-                "10015": 0, 
-                "11112": 0, 
-                "11122": 0, 
-                "10521": 0, 
                 "10212": 0, 
                 "10211": 0, 
                 "10209": 0, 
@@ -191,39 +144,30 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                 "10254": 0, 
                 "10262": 0 
             }
-            game_comms_json = json.dumps(game_comms, indent=4)
             
-            with open(ctx.save_game_folder + "/game_comms.json", 'w') as f:
-                f.write(game_comms_json)
-                f.close()
-        #Check if exists, if it does restore json to initial values, don't mark as dirty yet
-        else:
-            """reset state"""
-            with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-                game_comms_json = get_clean_game_comms_file(f)
+            items_in["current_item_index"] = str(ctx.cur_start_index)
             
-                for key in game_comms_json:
-                    if str(key).isdigit():
-                        game_comms_json[key] = 0
-                    
-                game_comms_json["cur_message"] = ""
-                game_comms_json["message_is_stale"] = 0
+            for item in ctx.checks_to_consume:
+                net_item = NetworkItem(*item)
+                items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
                 
-                f.seek(0)
-                f.truncate()
-                json.dump(game_comms_json, f, indent=4) 
+            items_in_json = json.dumps(items_in, indent=4)
+        
+            with open(ctx.save_game_folder + "/items.json", 'w') as f:
+                f.write(items_in_json)
                 f.close()
-                
-        """update with server values, items get sent in ReceivedItems initially"""        
-        with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-            game_comms_json = get_clean_game_comms_file(f)
-            for loc in set(args["checked_locations"]):
-                game_comms_json[str(loc)] = 1
+                        
+
+# Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
+# Not sure if we are overriding it or just executing our own code alongside it
+async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
+    if cmd == "Connected":
+        print("CONNECTED SHII")
+        
+        # Do all file init here
+        if not os.path.exists(ctx.save_game_folder):
+            os.mkdir(ctx.save_game_folder)
             
-            f.seek(0)
-            f.truncate()
-            json.dump(game_comms_json, f, indent=4)   
-            f.close()    
     elif cmd == "RoomInfo":
         # Probably not necessary from looking at other clients
         print("Info: " + str(ctx.seed_name) + " : " + str(args["seed_name"]))
@@ -250,31 +194,49 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                                  "locations": list(ctx.locations_checked)})
             await ctx.send_msgs(sync_msg)
         
-        #if 
         if start_index == len(ctx.items_received):
-            if os.path.exists(ctx.save_game_folder + "/game_comms.json"):
-                with open(ctx.save_game_folder + "/game_comms.json", 'r+') as f:
-                    game_comms_json = get_clean_game_comms_file(f)
+            #If not reading items, send items
+            if not os.path.exists(ctx.save_game_folder + "/items.json"):
+                items_in = { 
+                    "cur_message": "", 
+                    "message_is_stale": 1,
+                    "current_item_index": "",
+                    "prev_item_index": "",  
+                    "10212": 0, 
+                    "10211": 0, 
+                    "10209": 0, 
+                    "10214": 0, 
+                    "10210": 0, 
+                    "10216": 0, 
+                    "10213": 0, 
+                    "10215": 0, 
+                    "10217": 0, 
+                    "10208": 0, 
+                    "10237": 0, 
+                    "10254": 0, 
+                    "10262": 0 
+                }
+                
+                items_in["current_item_index"] = str(start_index)
+                
+                for item in args["items"]:
+                    net_item = NetworkItem(*item)
+                    items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
                     
-                    game_comms_json["current_item_index"] = str(start_index)
-                    
-                    for item_slot in dict(game_comms_json):
-                        if str(game_comms_json[item_slot]).isdigit() and game_comms_json[item_slot] > 0:
-                            game_comms_json[item_slot] = 0
-                    
-                    for item in args["items"]:
-                        net_item = NetworkItem(*item)
-                        game_comms_json[str(net_item.item)] = int(game_comms_json[str(net_item.item)]) + 1
-                    
-                    f.seek(0)
-                    f.truncate()
-                    json.dump(game_comms_json, f, indent=4)
-                    
-                    f.close()
+                items_in_json = json.dumps(items_in, indent=4)
             
-
-import os
-import json
+                with open(ctx.save_game_folder + "/items.json", 'w') as f:
+                    f.write(items_in_json)
+                    f.close()
+            #if reading items, buffer items
+            elif os.path.exists(ctx.save_game_folder + "/items.json"):
+                ctx.checks_to_consume = []
+                
+                for item in args["items"]:
+                    net_item = NetworkItem(*item)
+                    ctx.checks_to_consume.append(net_item)
+                
+                ctx.cur_start_index = start_index
 
 def get_clean_game_comms_file(f):
     """
