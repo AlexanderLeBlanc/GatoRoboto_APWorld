@@ -29,7 +29,7 @@ item_data_table: Dict[str, GatoRobotoItemData] = {
     ItemName.healthkit: GatoRobotoItemData(gato_roboto_base_id + 208, ItemClassification.filler),
     ItemName.progressive_aqueduct: GatoRobotoItemData(gato_roboto_base_id + 237, ItemClassification.progression),
     ItemName.progressive_heater: GatoRobotoItemData(gato_roboto_base_id + 254, ItemClassification.progression),
-    ItemName.progressive_vent: GatoRobotoItemData(gato_roboto_base_id + 2, ItemClassification.progression)
+    ItemName.progressive_vent: GatoRobotoItemData(gato_roboto_base_id + 262, ItemClassification.progression)
 }
 
 item_table = {name: data.code for name, data in item_data_table.items()}
