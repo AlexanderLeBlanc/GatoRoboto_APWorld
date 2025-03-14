@@ -20,7 +20,20 @@ modules_item_data_table: Dict[str, GatoRobotoItemData] = {
     ItemName.module_missile: GatoRobotoItemData(gato_roboto_base_id + 210, ItemClassification.progression),
     ItemName.module_phase: GatoRobotoItemData(gato_roboto_base_id + 216, ItemClassification.progression),
     ItemName.module_repeater: GatoRobotoItemData(gato_roboto_base_id + 213, ItemClassification.useful),
-    ItemName.module_spinjump: GatoRobotoItemData(gato_roboto_base_id + 215, ItemClassification.progression),
+    ItemName.module_spinjump: GatoRobotoItemData(gato_roboto_base_id + 215, ItemClassification.progression)
+}
+
+healthkits_item_data_table: Dict[str, GatoRobotoItemData] = {
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 16, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 17, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 18, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 19, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 20, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 21, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 22, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 23, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 24, ItemClassification.progression),
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 25, ItemClassification.progression)
 }
 
 cartidges_item_data_table: Dict[str, GatoRobotoItemData] = {
@@ -37,16 +50,34 @@ cartidges_item_data_table: Dict[str, GatoRobotoItemData] = {
     ItemName.cartridge_11: GatoRobotoItemData(gato_roboto_base_id + 12, ItemClassification.progression),
     ItemName.cartridge_12: GatoRobotoItemData(gato_roboto_base_id + 13, ItemClassification.progression),
     ItemName.cartridge_13: GatoRobotoItemData(gato_roboto_base_id + 14, ItemClassification.progression),
-    ItemName.cartridge_14: GatoRobotoItemData(gato_roboto_base_id + 15, ItemClassification.progression),
+    ItemName.cartridge_14: GatoRobotoItemData(gato_roboto_base_id + 15, ItemClassification.progression)
+}
+
+heater_events_item_data_table: Dict[str, GatoRobotoItemData] = {
+    ItemName.progressive_heater_1: GatoRobotoItemData(gato_roboto_base_id + 254, ItemClassification.progression),
+    ItemName.progressive_heater_2: GatoRobotoItemData(gato_roboto_base_id + 255, ItemClassification.progression),
+    ItemName.progressive_heater_3: GatoRobotoItemData(gato_roboto_base_id + 256, ItemClassification.progression),
+}
+
+aqueduct_events_item_data_table: Dict[str, GatoRobotoItemData] = {
+    ItemName.progressive_aqueduct_1: GatoRobotoItemData(gato_roboto_base_id + 237, ItemClassification.progression),
+    ItemName.progressive_aqueduct_2: GatoRobotoItemData(gato_roboto_base_id + 238, ItemClassification.progression),
+    ItemName.progressive_aqueduct_3: GatoRobotoItemData(gato_roboto_base_id + 239, ItemClassification.progression),
+}
+
+vent_events_item_data_table: Dict[str, GatoRobotoItemData] = {
+    ItemName.progressive_vent_1: GatoRobotoItemData(gato_roboto_base_id + 262, ItemClassification.progression),
+    ItemName.progressive_vent_2: GatoRobotoItemData(gato_roboto_base_id + 263, ItemClassification.progression),
+    ItemName.progressive_vent_3: GatoRobotoItemData(gato_roboto_base_id + 264, ItemClassification.progression),
 }
 
 item_data_table: Dict[str, GatoRobotoItemData] = {
     **modules_item_data_table, 
     **cartidges_item_data_table,
-    ItemName.healthkit: GatoRobotoItemData(gato_roboto_base_id + 208, ItemClassification.filler),
-    ItemName.progressive_aqueduct: GatoRobotoItemData(gato_roboto_base_id + 237, ItemClassification.progression),
-    ItemName.progressive_heater: GatoRobotoItemData(gato_roboto_base_id + 254, ItemClassification.progression),
-    ItemName.progressive_vent: GatoRobotoItemData(gato_roboto_base_id + 262, ItemClassification.progression)
+    **healthkits_item_data_table,
+    **heater_events_item_data_table,
+    **aqueduct_events_item_data_table,
+    **vent_events_item_data_table
 }
 
 item_table = {name: data.code for name, data in item_data_table.items()}
