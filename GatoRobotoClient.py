@@ -266,9 +266,7 @@ def get_clean_game_comms_file(f):
 
 #Set up message and stale
 #Set up patching
-#fix yaml gen
 #make mrkdown for webworld
-#fix json gen
                     
 def main():
     Utils.init_logging("GatoRobotoClient", exception_logger="Client")
