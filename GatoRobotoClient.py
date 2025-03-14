@@ -119,8 +119,6 @@ async def game_watcher(ctx: GatoRobotoContext):
                 if len(sending) != 0:
                     "SENDING ITEM YOOO"
                     await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
-
-                f.close()
             
             os.remove(ctx.save_game_folder + "/locations.json")
                 
@@ -138,11 +136,24 @@ async def game_watcher(ctx: GatoRobotoContext):
                 "10216": 0, 
                 "10213": 0, 
                 "10215": 0, 
-                "10217": 0, 
                 "10208": 0, 
                 "10237": 0, 
                 "10254": 0, 
-                "10262": 0 
+                "10262": 0,
+                "10002": 0,
+                "10003": 0,
+                "10004": 0,
+                "10005": 0,
+                "10006": 0,
+                "10007": 0,
+                "10008": 0,
+                "10009": 0,
+                "100010": 0,
+                "100011": 0,
+                "100012": 0,
+                "100013": 0,
+                "100014": 0,
+                "100015": 0,
             }
             
             for item in ctx.checks_to_consume:
@@ -152,9 +163,10 @@ async def game_watcher(ctx: GatoRobotoContext):
                 
             items_in_json = json.dumps(items_in, indent=4)
         
-            with open(ctx.save_game_folder + "/items.json", 'w') as f:
+            with open(ctx.save_game_folder + "/tmp_it.json", 'w') as f:
                 f.write(items_in_json)
-                f.close()
+            
+            os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
                         
 
 # Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
@@ -209,11 +221,24 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                     "10216": 0, 
                     "10213": 0, 
                     "10215": 0, 
-                    "10217": 0, 
                     "10208": 0, 
                     "10237": 0, 
                     "10254": 0, 
-                    "10262": 0 
+                    "10262": 0,
+                    "10002": 0,
+                    "10003": 0,
+                    "10004": 0,
+                    "10005": 0,
+                    "10006": 0,
+                    "10007": 0,
+                    "10008": 0,
+                    "10009": 0,
+                    "100010": 0,
+                    "100011": 0,
+                    "100012": 0,
+                    "100013": 0,
+                    "100014": 0,
+                    "100015": 0,
                 }
                 
                 for item in args["items"]:
@@ -223,9 +248,10 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                     
                 items_in_json = json.dumps(items_in, indent=4)
             
-                with open(ctx.save_game_folder + "/items.json", 'w') as f:
+                with open(ctx.save_game_folder + "/tmp_it.json", 'w') as f:
                     f.write(items_in_json)
-                    f.close()
+                
+                os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
             #if reading items, buffer items
             elif os.path.exists(ctx.save_game_folder + "/items.json"):
                 ctx.checks_to_consume = []
