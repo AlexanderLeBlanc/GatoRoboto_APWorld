@@ -89,14 +89,7 @@ class GatoRobotoContext(CommonContext):
         self.ui = UTManager(self)
         self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")
         
-async def game_watcher(ctx: GatoRobotoContext):
-    """placeholder"""
-    """await asyncio.sleep(20)
-    print("starting send")
-    #while not ctx.exit_event.is_set():
-    ret = await ctx.check_locations([10408])
-    print(ret)"""
-    
+async def game_watcher(ctx: GatoRobotoContext): 
     while not ctx.exit_event.is_set():
         await asyncio.sleep(0.1)
         """Watch game json"""
@@ -113,7 +106,6 @@ async def game_watcher(ctx: GatoRobotoContext):
                     if str(key).isdigit():
                         print("Location check: " + str(key) + " // " + str(ctx.missing_locations.__contains__(int(key))) + " // " + str(int(locations_in[str(key)]) > 0))
                         if ctx.missing_locations.__contains__(int(key)) and int(locations_in[str(key)]) > 0:
-                            #print("Found an item to send")
                             sending.append(int(key))
                 
                 if len(sending) != 0:
@@ -121,13 +113,13 @@ async def game_watcher(ctx: GatoRobotoContext):
                     await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
             
             os.remove(ctx.save_game_folder + "/locations.json")
+        
+        if os.path.exists(ctx.save_game_folder + "/victory.json"):
+            if (not ctx.finished_game):
+                await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                 
         if len(ctx.checks_to_consume) > 0 and not os.path.exists(ctx.save_game_folder + "/items.json"):
             items_in = { 
-                "cur_message": "", 
-                "message_is_stale": 1,
-                "current_item_index": "",
-                "prev_item_index": "",  
                 "10212": 0, 
                 "10211": 0, 
                 "10209": 0, 
@@ -172,7 +164,6 @@ async def game_watcher(ctx: GatoRobotoContext):
             
             for item in ctx.checks_to_consume:
                 net_item = NetworkItem(*item)
-                items_in["current_item_index"] = str(net_item.item)
                 items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
                 
             items_in_json = json.dumps(items_in, indent=4)
@@ -223,10 +214,6 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
             #If not reading items, send items
             if not os.path.exists(ctx.save_game_folder + "/items.json"):
                 items_in = { 
-                    "cur_message": "", 
-                    "message_is_stale": 1,
-                    "current_item_index": "",
-                    "prev_item_index": "",  
                     "10212": 0, 
                     "10211": 0, 
                     "10209": 0, 
@@ -271,7 +258,6 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                 
                 for item in args["items"]:
                     net_item = NetworkItem(*item)
-                    items_in["current_item_index"] = str(net_item.item)
                     items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
                     
                 items_in_json = json.dumps(items_in, indent=4)
@@ -320,11 +306,15 @@ def get_clean_game_comms_file(f):
 #Set up patching
 #make mrkdown for webworld
                     
-def main():
+def main():        
     Utils.init_logging("GatoRobotoClient", exception_logger="Client")
 
     async def _main():
         ctx = GatoRobotoContext(None, None)
+        
+        if os.path.exists(ctx.save_game_folder + "/item.json"):
+            os.remove(ctx.save_game_folder + "/item.json")
+            
         ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
         asyncio.create_task(
             game_watcher(ctx), name="GatoRobotoProgressionWatcher")
