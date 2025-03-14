@@ -145,10 +145,9 @@ async def game_watcher(ctx: GatoRobotoContext):
                 "10262": 0 
             }
             
-            items_in["current_item_index"] = str(ctx.cur_start_index)
-            
             for item in ctx.checks_to_consume:
                 net_item = NetworkItem(*item)
+                items_in["current_item_index"] = str(net_item.item)
                 items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
                 
             items_in_json = json.dumps(items_in, indent=4)
@@ -217,10 +216,9 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                     "10262": 0 
                 }
                 
-                items_in["current_item_index"] = str(start_index)
-                
                 for item in args["items"]:
                     net_item = NetworkItem(*item)
+                    items_in["current_item_index"] = str(net_item.item)
                     items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
                     
                 items_in_json = json.dumps(items_in, indent=4)
