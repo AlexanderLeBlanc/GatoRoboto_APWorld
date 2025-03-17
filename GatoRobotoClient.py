@@ -25,6 +25,33 @@ checked_locations = list from server of locations youve checked
 class GatoRobotoCommandProcessor(ClientCommandProcessor):
     def __init__(self, ctx):
         super().__init__(ctx) 
+        
+    @mark_raw
+    def _cmd_auto_patch(self, steaminstall: typing.Optional[str] = None):
+        """Patch the game automatically."""
+        if isinstance(self.ctx, GatoRobotoContext):
+            os.makedirs(name=Utils.user_path("Gato Roboto"), exist_ok=True)
+            tempInstall = steaminstall
+            if not os.path.isfile(os.path.join(tempInstall, "data.win")):
+                tempInstall = None
+            if tempInstall is None:
+                tempInstall = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Gato Roboto"
+                if not os.path.exists(tempInstall):
+                    tempInstall = "C:\\Program Files\\Steam\\steamapps\\common\\Gato Roboto"
+            elif not os.path.exists(tempInstall):
+                tempInstall = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Gato Roboto"
+                if not os.path.exists(tempInstall):
+                    tempInstall = "C:\\Program Files\\Steam\\steamapps\\common\\Gato Roboto"
+            if not os.path.exists(tempInstall) or not os.path.exists(tempInstall) or not os.path.isfile(os.path.join(tempInstall, "data.win")):
+                self.output("ERROR: Cannot find Gato Roboto. Please rerun the command with the correct folder."
+                            " command. \"/auto_patch (Steam directory)\".")
+            else:
+                for file_name in os.listdir(tempInstall):
+                    if file_name != "steam_api.dll":
+                        shutil.copy(os.path.join(tempInstall, file_name),
+                               Utils.user_path("Gato Roboto", file_name))
+                self.ctx.patch_game()
+                self.output("Patching successful!")
 
 class GatoRobotoContext(CommonContext):
     tags = {"AP", "Online"}
@@ -32,6 +59,8 @@ class GatoRobotoContext(CommonContext):
     command_processor = GatoRobotoCommandProcessor
     save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
     checks_to_consume = []
+    cur_client_items = []
+    read_client_items = False
     cur_start_index = 0
     
     def __init__(self, server_address, password):
@@ -44,6 +73,12 @@ class GatoRobotoContext(CommonContext):
         
         # self.save_game_folder: Files go in this path to pass data between us and the actual game
         self.save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
+        
+    def patch_game(self):
+        with open(Utils.user_path("Gato Roboto", "data.win"), "rb") as f:
+            patchedFile = bsdiff4.patch(f.read(), gatoroboto.data_path("patch.bsdiff"))
+        with open(Utils.user_path("Gato Roboto", "data.win"), "wb") as f:
+            f.write(patchedFile)
 
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
@@ -92,7 +127,8 @@ class GatoRobotoContext(CommonContext):
 async def game_watcher(ctx: GatoRobotoContext): 
     while not ctx.exit_event.is_set():
         await asyncio.sleep(0.1)
-        """Watch game json"""
+        
+        #watch for received locations from game
         if os.path.exists(ctx.save_game_folder + "/locations.json"):   
             with open(ctx.save_game_folder + "/locations.json", 'r+') as f:
                 locations_in = get_clean_game_comms_file(f)
@@ -114,11 +150,45 @@ async def game_watcher(ctx: GatoRobotoContext):
             
             os.remove(ctx.save_game_folder + "/locations.json")
         
+        #check if wincon present
         if os.path.exists(ctx.save_game_folder + "/victory.json"):
             if (not ctx.finished_game):
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+              
+        #read initial data for syncing items with the client
+        if not ctx.read_client_items and os.path.exists(ctx.save_game_folder + "/init.json"):
+            ctx.read_client_items = True
+            
+            with open(ctx.save_game_folder + "/init.json", 'r') as f:
+                items_init = get_clean_game_comms_file(f)
                 
-        if len(ctx.checks_to_consume) > 0 and not os.path.exists(ctx.save_game_folder + "/items.json"):
+                for key in items_init:
+                    ctx.cur_client_items.append(int(key))
+        
+        #consume items in fifo order, filter out received items
+        if len(ctx.checks_to_consume) > 0 and ctx.read_client_items and not os.path.exists(ctx.save_game_folder + "/items.json"):
+            flag = True
+            while(len(ctx.checks_to_consume) > 0 and flag):
+                cur_item = ctx.checks_to_consume.pop(0)
+                
+                if not ctx.cur_client_items.__contains__(int(cur_item)):
+                    ctx.cur_client_items.append(int(cur_item))
+                    
+                    item_in = {
+                        "{cur_item}": 1
+                    }
+                    
+                    item_in_json = json.dumps(item_in, indent=4)
+            
+                    with open(ctx.save_game_folder + "/tmp_it.json", 'w') as f:
+                        f.write(item_in_json)
+                
+                    os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
+
+                    flag = True
+                    
+        
+        """if len(ctx.checks_to_consume) > 0 and not os.path.exists(ctx.save_game_folder + "/items.json"):
             items_in = { 
                 "10212": 0, 
                 "10211": 0, 
@@ -171,7 +241,7 @@ async def game_watcher(ctx: GatoRobotoContext):
             with open(ctx.save_game_folder + "/tmp_it.json", 'w') as f:
                 f.write(items_in_json)
             
-            os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
+            os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")"""
                         
 
 # Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
@@ -211,8 +281,15 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
             await ctx.send_msgs(sync_msg)
         
         if start_index == len(ctx.items_received):
-            #If not reading items, send items
-            if not os.path.exists(ctx.save_game_folder + "/items.json"):
+            
+            #Send items to items queue
+            for item in args["items"]:
+                net_item = NetworkItem(*item)
+                ctx.checks_to_consume.append(net_item)
+            
+            ctx.cur_start_index = start_index
+            
+            """if not os.path.exists(ctx.save_game_folder + "/items.json"):
                 items_in = { 
                     "10212": 0, 
                     "10211": 0, 
@@ -274,7 +351,7 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                     net_item = NetworkItem(*item)
                     ctx.checks_to_consume.append(net_item)
                 
-                ctx.cur_start_index = start_index
+                ctx.cur_start_index = start_index"""
 
 def get_clean_game_comms_file(f):
     """
@@ -304,7 +381,6 @@ def get_clean_game_comms_file(f):
 
 #Set up message and stale
 #Set up patching
-#make mrkdown for webworld
                     
 def main():        
     Utils.init_logging("GatoRobotoClient", exception_logger="Client")
