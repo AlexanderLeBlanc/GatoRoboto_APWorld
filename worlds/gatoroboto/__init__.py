@@ -8,7 +8,8 @@ from .Locations import GatoRobotoLocation, location_table, healthkit_location_da
 from .Names import ItemName
 from .Options import GatoRobotoOptions, gatoroboto_option_groups
 from multiprocessing import Process
-from worlds.LauncherComponents import Component, components
+from worlds.LauncherComponents import Component, icon_paths, components
+import Utils
 
 from .Names import RegionName
 
@@ -18,7 +19,12 @@ def run_client():
     p = Process(target=main)
     p.start()
 
-components.append(Component("Gato Roboto Client", "GatoRobotoClient"))
+components.append(Component("Gato Roboto Client", "GatoRobotoClient", icon='kiki'))
+icon_paths['kiki'] = Utils.user_path("worlds/gatoroboto/data", "Kiki.png")
+
+def data_path(file_name: str):
+    import pkgutil
+    return pkgutil.get_data(__name__, "data/" + file_name)
 
 class GatoRobotoWebWorld(WebWorld):
     theme = "ice"

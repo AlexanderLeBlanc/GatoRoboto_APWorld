@@ -30,7 +30,8 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
     def _cmd_auto_patch(self, steaminstall: typing.Optional[str] = None):
         """Patch the game automatically."""
         if isinstance(self.ctx, GatoRobotoContext):
-            os.makedirs(name=Utils.user_path("Gato Roboto"), exist_ok=True)
+            
+            #os.makedirs(name=Utils.user_path("Gato Roboto/anim"), exist_ok=True)
             tempInstall = steaminstall
             if not os.path.isfile(os.path.join(tempInstall, "data.win")):
                 tempInstall = None
@@ -45,12 +46,17 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
             if not os.path.exists(tempInstall) or not os.path.exists(tempInstall) or not os.path.isfile(os.path.join(tempInstall, "data.win")):
                 self.output("ERROR: Cannot find Gato Roboto. Please rerun the command with the correct folder."
                             " command. \"/auto_patch (Steam directory)\".")
-            else:
-                for file_name in os.listdir(tempInstall):
+            else:                
+                """for file_name in os.listdir(tempInstall):
                     if file_name != "steam_api.dll":
-                        shutil.copy(os.path.join(tempInstall, file_name),
-                               Utils.user_path("Gato Roboto", file_name))
-                self.ctx.patch_game()
+                        if file_name == "anim":
+                            for anim_file in os.listdir(os.path.join(tempInstall, "anim")):
+                                shutil.copy(os.path.join(os.path.join(tempInstall, "anim"), anim_file),
+                                    Utils.user_path("Gato Roboto\\anim", anim_file))
+                        else:
+                            shutil.copy(os.path.join(tempInstall, file_name),
+                                Utils.user_path("Gato Roboto", file_name))"""
+                self.ctx.patch_game(tempInstall)
                 self.output("Patching successful!")
 
 class GatoRobotoContext(CommonContext):
@@ -74,10 +80,12 @@ class GatoRobotoContext(CommonContext):
         # self.save_game_folder: Files go in this path to pass data between us and the actual game
         self.save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
         
-    def patch_game(self):
-        with open(Utils.user_path("Gato Roboto", "data.win"), "rb") as f:
+    def patch_game(self, filepath):
+        os.makedirs(name=filepath + "/VanillaData", exist_ok=True)
+        shutil.copy(filepath + "/data.win", filepath + "/VanillaData")
+        with open(filepath + "/data.win", "rb") as f:
             patchedFile = bsdiff4.patch(f.read(), gatoroboto.data_path("patch.bsdiff"))
-        with open(Utils.user_path("Gato Roboto", "data.win"), "wb") as f:
+        with open(filepath + "/data.win", "wb") as f:
             f.write(patchedFile)
 
     async def server_auth(self, password_requested: bool = False):
@@ -175,7 +183,7 @@ async def game_watcher(ctx: GatoRobotoContext):
                     ctx.cur_client_items.append(int(cur_item))
                     
                     item_in = {
-                        "{cur_item}": 1
+                        str(cur_item): 1
                     }
                     
                     item_in_json = json.dumps(item_in, indent=4)
