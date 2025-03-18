@@ -172,11 +172,12 @@ async def game_watcher(ctx: GatoRobotoContext):
             while(len(ctx.checks_to_consume) > 0 and flag):
                 cur_item = ctx.checks_to_consume.pop(0)
                 
-                if not ctx.cur_client_items.__contains__(int(cur_item)):
-                    ctx.cur_client_items.append(int(cur_item))
+                if not ctx.cur_client_items.__contains__(int(cur_item["item"])):
+                    ctx.cur_client_items.append(int(cur_item["item"]))
                     
                     item_in = {
-                        "item": int(cur_item)
+                        "item": int(cur_item["item"]),
+                        "item_index": int(cur_item["item_index"])
                     }
                     
                     item_in_json = json.dumps(item_in, indent=4)
@@ -286,7 +287,7 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
             #Send items to items queue
             for item in args["items"]:
                 net_item = NetworkItem(*item)
-                ctx.checks_to_consume.append(net_item)
+                ctx.checks_to_consume.append({ "item": net_item, "item_index": start_index })
             
             ctx.cur_start_index = start_index
             
