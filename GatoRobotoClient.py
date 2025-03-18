@@ -172,11 +172,11 @@ async def game_watcher(ctx: GatoRobotoContext):
             while(len(ctx.checks_to_consume) > 0 and flag):
                 cur_item = ctx.checks_to_consume.pop(0)
                 
-                if not ctx.cur_client_items.__contains__(int(cur_item["item"])):
-                    ctx.cur_client_items.append(int(cur_item["item"]))
+                if not ctx.cur_client_items.__contains__(int(cur_item["item"].item)):
+                    ctx.cur_client_items.append(int(cur_item["item"].item))
                     
                     item_in = {
-                        "item": int(cur_item["item"]),
+                        "item": int(cur_item["item"].item),
                         "item_index": int(cur_item["item_index"])
                     }
                     
