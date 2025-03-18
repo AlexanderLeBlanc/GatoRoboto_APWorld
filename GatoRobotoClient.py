@@ -158,7 +158,7 @@ async def game_watcher(ctx: GatoRobotoContext):
         if not ctx.read_client_items and os.path.exists(ctx.save_game_folder + "/init.json"):
             ctx.read_client_items = True
             
-            with open(ctx.save_game_folder + "/init.json", 'r') as f:
+            with open(ctx.save_game_folder + "/init.json", 'r+') as f:
                 items_init = get_clean_game_comms_file(f)
                 
                 for key in items_init:
