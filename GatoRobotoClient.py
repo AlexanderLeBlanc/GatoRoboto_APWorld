@@ -26,6 +26,9 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
     def __init__(self, ctx):
         super().__init__(ctx) 
         
+    def print_log(msg):
+        logger.info(msg)
+        
     @mark_raw
     def _cmd_auto_patch(self, steaminstall: typing.Optional[str] = None):
         """Patch the game automatically."""
@@ -86,29 +89,22 @@ class GatoRobotoContext(CommonContext):
         await self.get_username()
         await self.send_connect()
 
-    def on_package(self, cmd, args):
-        print('SOMETHING: ' + str(cmd))
-        
+    def on_package(self, cmd, args):        
         if (cmd == 'Connected'):
-            print('HELL YEE')
             self.game = self.slot_info[self.slot].game
         
         async_start(process_gatoroboto_cmd(self, cmd, args))
         
     async def connect(self, address: typing.Optional[str] = None):
-        print('log connect')
         await super().connect(address)
 
     async def disconnect(self, allow_autoreconnect: bool = False):
-        print('log disconnect')
         await super().disconnect(allow_autoreconnect)
 
     async def connection_closed(self):
-        print('log connect close')
         await super().connection_closed()
 
     async def shutdown(self):
-        print('log shutdown')
         await super().shutdown()
         
     def run_gui(self):
@@ -123,9 +119,15 @@ class GatoRobotoContext(CommonContext):
         self.ui = UTManager(self)
         self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")
         
-async def game_watcher(ctx: GatoRobotoContext): 
+async def game_watcher(ctx: GatoRobotoContext):    
+    printed_connecting = False
+     
     while not ctx.exit_event.is_set():
         await asyncio.sleep(0.1)
+        
+        if not printed_connecting:
+            ctx.command_processor.print_log("Waiting for Connection to Game")
+            printed_connecting = True
         
         #watch for received locations from game
         if os.path.exists(ctx.save_game_folder + "/locations.json"):   
@@ -134,8 +136,8 @@ async def game_watcher(ctx: GatoRobotoContext):
                 
                 sending = []
                 
-                print("Missing Locations")
-                print(ctx.missing_locations)
+                #print("Missing Locations")
+                #print(ctx.missing_locations)
                 
                 for key in locations_in:
                     if str(key).isdigit():
@@ -144,18 +146,27 @@ async def game_watcher(ctx: GatoRobotoContext):
                             sending.append(int(key))
                 
                 if len(sending) != 0:
-                    "SENDING ITEM YOOO"
                     await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
             
             os.remove(ctx.save_game_folder + "/locations.json")
         
         #check if wincon present
         if os.path.exists(ctx.save_game_folder + "/victory.json"):
-            if (not ctx.finished_game):
+            if not ctx.finished_game:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+                
+        #check if game disconnects
+        if os.path.exists(ctx.save_game_folder + "/off.json"):
+            ctx.command_processor.print_log("Lost Connection to Game")
+            ctx.command_processor.print_log("Waiting for Connection to Game")
+            os.remove(ctx.save_game_folder + "/off.json")
+            ctx.cur_client_items = []
+            ctx.read_client_items = False
               
         #read initial data for syncing items with the client
         if not ctx.read_client_items and os.path.exists(ctx.save_game_folder + "/init.json"):
+            ctx.command_processor.print_log("Connected to Game")
+            
             ctx.read_client_items = True
             
             with open(ctx.save_game_folder + "/init.json", 'r+') as f:
@@ -187,64 +198,7 @@ async def game_watcher(ctx: GatoRobotoContext):
                 
                     os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
 
-                    flag = True
-                    
-        
-        """if len(ctx.checks_to_consume) > 0 and not os.path.exists(ctx.save_game_folder + "/items.json"):
-            items_in = { 
-                "10212": 0, 
-                "10211": 0, 
-                "10209": 0, 
-                "10214": 0, 
-                "10210": 0, 
-                "10216": 0, 
-                "10213": 0, 
-                "10215": 0, 
-                "10237": 0, 
-                "10238": 0, 
-                "10239": 0, 
-                "10254": 0, 
-                "10255": 0, 
-                "10262": 0,
-                "10263": 0,
-                "10264": 0,
-                "10002": 0,
-                "10003": 0,
-                "10004": 0,
-                "10005": 0,
-                "10006": 0,
-                "10007": 0,
-                "10008": 0,
-                "10009": 0,
-                "10010": 0,
-                "10011": 0,
-                "10012": 0,
-                "10013": 0,
-                "10014": 0,
-                "10015": 0,
-                "10016": 0,
-                "10017": 0,
-                "10018": 0,
-                "10019": 0,
-                "10020": 0,
-                "10021": 0,
-                "10022": 0,
-                "10023": 0,
-                "10024": 0,
-                "10025": 0,
-            }
-            
-            for item in ctx.checks_to_consume:
-                net_item = NetworkItem(*item)
-                items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
-                
-            items_in_json = json.dumps(items_in, indent=4)
-        
-            with open(ctx.save_game_folder + "/tmp_it.json", 'w') as f:
-                f.write(items_in_json)
-            
-            os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")"""
-                        
+                    flag = True                        
 
 # Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
 # Not sure if we are overriding it or just executing our own code alongside it
@@ -290,70 +244,6 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
                 ctx.checks_to_consume.append(net_item)
             
             ctx.cur_start_index = start_index
-            
-            """if not os.path.exists(ctx.save_game_folder + "/items.json"):
-                items_in = { 
-                    "10212": 0, 
-                    "10211": 0, 
-                    "10209": 0, 
-                    "10214": 0, 
-                    "10210": 0, 
-                    "10216": 0, 
-                    "10213": 0, 
-                    "10215": 0, 
-                    "10237": 0, 
-                    "10238": 0, 
-                    "10239": 0, 
-                    "10254": 0, 
-                    "10255": 0, 
-                    "10262": 0,
-                    "10263": 0,
-                    "10264": 0,
-                    "10002": 0,
-                    "10003": 0,
-                    "10004": 0,
-                    "10005": 0,
-                    "10006": 0,
-                    "10007": 0,
-                    "10008": 0,
-                    "10009": 0,
-                    "10010": 0,
-                    "10011": 0,
-                    "10012": 0,
-                    "10013": 0,
-                    "10014": 0,
-                    "10015": 0,
-                    "10016": 0,
-                    "10017": 0,
-                    "10018": 0,
-                    "10019": 0,
-                    "10020": 0,
-                    "10021": 0,
-                    "10022": 0,
-                    "10023": 0,
-                    "10024": 0,
-                    "10025": 0,
-                }
-                
-                for item in args["items"]:
-                    net_item = NetworkItem(*item)
-                    items_in[str(net_item.item)] = int(items_in[str(net_item.item)]) + 1
-                    
-                items_in_json = json.dumps(items_in, indent=4)
-            
-                with open(ctx.save_game_folder + "/tmp_it.json", 'w') as f:
-                    f.write(items_in_json)
-                
-                os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
-            #if reading items, buffer items
-            elif os.path.exists(ctx.save_game_folder + "/items.json"):
-                ctx.checks_to_consume = []
-                
-                for item in args["items"]:
-                    net_item = NetworkItem(*item)
-                    ctx.checks_to_consume.append(net_item)
-                
-                ctx.cur_start_index = start_index"""
 
 def get_clean_game_comms_file(f):
     """
