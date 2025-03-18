@@ -15,7 +15,7 @@ from .Names import RegionName
 
 def run_client():
     print('running gatoroboto client')
-    from GatoRobotoClient import main  # lazy import
+    from GatoRobotoClient import main
     p = Process(target=main)
     p.start()
 

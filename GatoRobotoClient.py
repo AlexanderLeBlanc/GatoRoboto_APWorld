@@ -47,15 +47,6 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
                 self.output("ERROR: Cannot find Gato Roboto. Please rerun the command with the correct folder."
                             " command. \"/auto_patch (Steam directory)\".")
             else:                
-                """for file_name in os.listdir(tempInstall):
-                    if file_name != "steam_api.dll":
-                        if file_name == "anim":
-                            for anim_file in os.listdir(os.path.join(tempInstall, "anim")):
-                                shutil.copy(os.path.join(os.path.join(tempInstall, "anim"), anim_file),
-                                    Utils.user_path("Gato Roboto\\anim", anim_file))
-                        else:
-                            shutil.copy(os.path.join(tempInstall, file_name),
-                                Utils.user_path("Gato Roboto", file_name))"""
                 self.ctx.patch_game(tempInstall)
                 self.output("Patching successful!")
 
@@ -183,7 +174,7 @@ async def game_watcher(ctx: GatoRobotoContext):
                     ctx.cur_client_items.append(int(cur_item))
                     
                     item_in = {
-                        str(cur_item): 1
+                        "item": int(cur_item)
                     }
                     
                     item_in_json = json.dumps(item_in, indent=4)
@@ -386,9 +377,6 @@ def get_clean_game_comms_file(f):
         print("JSON file cleaned successfully.")
         
     return cleaned_json
-
-#Set up message and stale
-#Set up patching
                     
 def main():        
     Utils.init_logging("GatoRobotoClient", exception_logger="Client")
