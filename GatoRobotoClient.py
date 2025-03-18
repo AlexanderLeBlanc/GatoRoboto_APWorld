@@ -163,6 +163,8 @@ async def game_watcher(ctx: GatoRobotoContext):
                 
                 for key in items_init:
                     ctx.cur_client_items.append(int(key))
+                    
+            os.remove(ctx.save_game_folder + "/init.json")
         
         #consume items in fifo order, filter out received items
         if len(ctx.checks_to_consume) > 0 and ctx.read_client_items and not os.path.exists(ctx.save_game_folder + "/items.json"):
