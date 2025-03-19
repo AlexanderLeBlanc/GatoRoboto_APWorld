@@ -29,7 +29,7 @@ healthkit_location_data_table: Dict[str, str] = {
 cartridge_location_data_table: Dict[str, str] = {
     LocationName.cartridge_1: GatoRobotoLocationData(RegionName.region_1, gatoroboto_base_id + 710),
     LocationName.cartridge_2: GatoRobotoLocationData(RegionName.region_1, gatoroboto_base_id + 1810),
-    LocationName.cartridge_3: GatoRobotoLocationData(RegionName.region_2, gatoroboto_base_id + 1214),
+    LocationName.cartridge_3: GatoRobotoLocationData(RegionName.region_2, gatoroboto_base_id + 914),
     LocationName.cartridge_4: GatoRobotoLocationData(RegionName.region_2, gatoroboto_base_id + 1413),
     LocationName.cartridge_5: GatoRobotoLocationData(RegionName.region_2, gatoroboto_base_id + 2113),
     LocationName.cartridge_6: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 1106),
