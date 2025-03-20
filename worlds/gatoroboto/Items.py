@@ -24,16 +24,16 @@ modules_item_data_table: Dict[str, GatoRobotoItemData] = {
 }
 
 healthkits_item_data_table: Dict[str, GatoRobotoItemData] = {
-    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 16, ItemClassification.progression),
-    ItemName.healthkit_2: GatoRobotoItemData(gato_roboto_base_id + 17, ItemClassification.progression),
-    ItemName.healthkit_3: GatoRobotoItemData(gato_roboto_base_id + 18, ItemClassification.progression),
-    ItemName.healthkit_4: GatoRobotoItemData(gato_roboto_base_id + 19, ItemClassification.progression),
-    ItemName.healthkit_5: GatoRobotoItemData(gato_roboto_base_id + 20, ItemClassification.progression),
-    ItemName.healthkit_6: GatoRobotoItemData(gato_roboto_base_id + 21, ItemClassification.progression),
-    ItemName.healthkit_7: GatoRobotoItemData(gato_roboto_base_id + 22, ItemClassification.progression),
-    ItemName.healthkit_8: GatoRobotoItemData(gato_roboto_base_id + 23, ItemClassification.progression),
-    ItemName.healthkit_9: GatoRobotoItemData(gato_roboto_base_id + 24, ItemClassification.progression),
-    ItemName.healthkit_10: GatoRobotoItemData(gato_roboto_base_id + 25, ItemClassification.progression)
+    ItemName.healthkit_1: GatoRobotoItemData(gato_roboto_base_id + 16, ItemClassification.useful),
+    ItemName.healthkit_2: GatoRobotoItemData(gato_roboto_base_id + 17, ItemClassification.useful),
+    ItemName.healthkit_3: GatoRobotoItemData(gato_roboto_base_id + 18, ItemClassification.useful),
+    ItemName.healthkit_4: GatoRobotoItemData(gato_roboto_base_id + 19, ItemClassification.useful),
+    ItemName.healthkit_5: GatoRobotoItemData(gato_roboto_base_id + 20, ItemClassification.useful),
+    ItemName.healthkit_6: GatoRobotoItemData(gato_roboto_base_id + 21, ItemClassification.useful),
+    ItemName.healthkit_7: GatoRobotoItemData(gato_roboto_base_id + 22, ItemClassification.useful),
+    ItemName.healthkit_8: GatoRobotoItemData(gato_roboto_base_id + 23, ItemClassification.useful),
+    ItemName.healthkit_9: GatoRobotoItemData(gato_roboto_base_id + 24, ItemClassification.useful),
+    ItemName.healthkit_10: GatoRobotoItemData(gato_roboto_base_id + 25, ItemClassification.useful)
 }
 
 cartidges_item_data_table: Dict[str, GatoRobotoItemData] = {
