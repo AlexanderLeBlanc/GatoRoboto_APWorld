@@ -17,7 +17,10 @@ def set_rules(world: GatoRobotoWorld):
     set_rule(world.get_location(LocationName.cartridge_1),
              lambda state: state.has(ItemName.module_missile, world.player))
     set_rule(world.get_location(LocationName.cartridge_2),
-             lambda state: state.has(ItemName.module_missile, world.player))
+             lambda state: 
+                (state.has(ItemName.module_missile, world.player) 
+                 and state.has(ItemName.module_spinjump, world.player))
+                or world.options.rocket_jumps)
     set_rule(world.get_location(LocationName.module_2),
              lambda state: state.has(ItemName.module_spinjump, world.player) 
                               and sum(state.has(item, world.player) for item in [
