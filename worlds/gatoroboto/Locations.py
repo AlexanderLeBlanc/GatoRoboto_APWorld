@@ -18,7 +18,7 @@ healthkit_location_data_table: Dict[str, str] = {
     LocationName.healthkit_2: GatoRobotoLocationData(RegionName.region_1, gatoroboto_base_id + 1812),
     LocationName.healthkit_3: GatoRobotoLocationData(RegionName.region_2, gatoroboto_base_id + 1014),
     LocationName.healthkit_4: GatoRobotoLocationData(RegionName.region_2, gatoroboto_base_id + 2314),
-    LocationName.healthkit_5: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 405),
+    LocationName.healthkit_5: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 406),
     LocationName.healthkit_6: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 1606),
     LocationName.healthkit_7: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 417),
     LocationName.healthkit_8: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 1713),
@@ -56,7 +56,7 @@ module_location_data_table: Dict[str, str] = {
 
 event_location_data_table: Dict[str, str] = {
     LocationName.aqueduct_1: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 204),
-    LocationName.aqueduct_2: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 1503),
+    LocationName.aqueduct_2: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 1603),
     LocationName.aqueduct_3: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 1908),
     LocationName.heater_1: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 19),
     LocationName.heater_2: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 313),

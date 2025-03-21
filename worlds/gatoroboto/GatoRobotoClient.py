@@ -183,12 +183,12 @@ async def game_watcher(ctx: GatoRobotoContext):
             os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
             
         #handle client restarts and game crashes via exe check
-        flag = True
+        flag = False
         for process in psutil.process_iter(attrs=["exe"]):
             try:
                 exe_path: str = process.info["exe"]
                 if exe_path and "gatoroboto" in exe_path.lower():  # ✅ Check if not None
-                    flag = False
+                    flag = True
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
         
@@ -201,6 +201,9 @@ async def game_watcher(ctx: GatoRobotoContext):
             ctx.command_processor.print_log("Waiting for Connection to Game")
             ctx.cur_client_items = []
             ctx.read_client_items = False
+            
+            if os.path.exists(f"{ctx.save_game_folder}/gameid.json"):
+                os.remove(f"{ctx.save_game_folder}/gameid.json")
             
             json_out: dict = {
                 "game_id": ctx.game_id
@@ -297,6 +300,9 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
             args["slot_data"]["game_id"] = id
             
         ctx.game_id = id
+            
+        if os.path.exists(f"{ctx.save_game_folder}/gameid.json"):
+            os.remove(f"{ctx.save_game_folder}/gameid.json")
             
         json_out: dict = {
             "game_id": id
