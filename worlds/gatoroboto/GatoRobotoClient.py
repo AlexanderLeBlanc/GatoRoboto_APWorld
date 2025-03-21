@@ -53,6 +53,12 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
             else:                
                 self.ctx.patch_game(tempInstall)
                 self.output("Patching successful!")
+                
+    def _cmd_resync(self):
+        """Manually trigger a resync."""
+        if isinstance(self.ctx, GatoRobotoContext):
+            self.output(f"Syncing items.")
+            self.ctx.syncing = True
 
 class GatoRobotoContext(CommonContext):
     tags = {"AP", "Online"}
@@ -91,6 +97,8 @@ class GatoRobotoContext(CommonContext):
         await self.send_connect()
 
     def on_package(self, cmd, args):        
+        print("Got Package: " + cmd)
+        
         if (cmd == 'Connected'):
             self.game = self.slot_info[self.slot].game
         
@@ -188,13 +196,11 @@ async def game_watcher(ctx: GatoRobotoContext):
                     
                     sending = []
                     
-                    #print("Missing Locations")
-                    #print(ctx.missing_locations)
-                    
                     for key in locations_in:
                         if str(key).isdigit():
-                            print("Location check: " + str(key) + " // " + str(ctx.missing_locations.__contains__(int(key))) + " // " + str(int(locations_in[str(key)]) > 0))
+                            #print("Location check: " + str(key) + " // " + str(ctx.missing_locations.__contains__(int(key))) + " // " + str(int(locations_in[str(key)]) > 0))
                             if ctx.missing_locations.__contains__(int(key)) and int(locations_in[str(key)]) > 0:
+                                print("Found Location to Send")
                                 sending.append(int(key))
                     
                     if len(sending) != 0:
@@ -202,8 +208,10 @@ async def game_watcher(ctx: GatoRobotoContext):
                 
                 os.remove(ctx.save_game_folder + "/locations.json")
             except PermissionError:
-                print("⚠ File is locked by another program. Skipping read.")
+                print("⚠ File is locked by another program, skipping read.")
                 await asyncio.sleep(0.3)
+            except TypeError:
+                print("⚠ Error in reading file, skipping read.")
         
         #check if wincon present
         if os.path.exists(ctx.save_game_folder + "/victory.json"):
@@ -233,7 +241,16 @@ async def game_watcher(ctx: GatoRobotoContext):
                 
                     os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
 
-                    flag = True                        
+                    flag = True      
+        
+        #resync, and attempt to send client all items received
+        if ctx.syncing:
+            ctx.items_received = []
+            sync_msg = [{"cmd": "Sync"}]
+            if ctx.locations_checked:
+                sync_msg.append({"cmd": "LocationChecks", "locations": list(ctx.locations_checked)})
+            await ctx.send_msgs(sync_msg)
+            ctx.syncing = False
 
 def find_process_by_path(target_path):
     """Check if a process is running from a specific path."""
