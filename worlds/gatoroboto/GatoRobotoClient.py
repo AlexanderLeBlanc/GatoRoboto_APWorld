@@ -71,6 +71,7 @@ class GatoRobotoContext(CommonContext):
     cur_client_items: list[int] = []
     read_client_items: bool = False
     cur_start_index: int = 0
+    items_handling = 0b111
     
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
