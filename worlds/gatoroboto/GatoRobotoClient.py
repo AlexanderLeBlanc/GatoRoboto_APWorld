@@ -7,6 +7,7 @@ import bsdiff4
 import shutil
 import json
 import psutil
+import uuid
 
 import Utils
 
@@ -70,6 +71,7 @@ class GatoRobotoContext(CommonContext):
     checks_to_consume: list[int] = []
     cur_client_items: list[int] = []
     read_client_items: bool = False
+    game_id: str = ""
     cur_start_index: int = 0
     items_handling = 0b111
     
@@ -168,13 +170,25 @@ async def game_watcher(ctx: GatoRobotoContext):
             ctx.cur_client_items = []
             ctx.read_client_items = False
             
+            #send game id for syncing
+            json_out: dict = {
+                "game_id": ctx.game_id
+            }
+            
+            item_in_json: str = json.dumps(json_out, indent=4)
+            
+            with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
+                f.write(item_in_json)
+        
+            os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
+            
         #handle client restarts and game crashes via exe check
-        flag = False
+        flag = True
         for process in psutil.process_iter(attrs=["exe"]):
             try:
                 exe_path: str = process.info["exe"]
                 if exe_path and "gatoroboto" in exe_path.lower():  # ✅ Check if not None
-                    flag = True
+                    flag = False
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
         
@@ -187,6 +201,17 @@ async def game_watcher(ctx: GatoRobotoContext):
             ctx.command_processor.print_log("Waiting for Connection to Game")
             ctx.cur_client_items = []
             ctx.read_client_items = False
+            
+            json_out: dict = {
+                "game_id": ctx.game_id
+            }
+            
+            item_in_json: str = json.dumps(json_out, indent=4)
+            
+            with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
+                f.write(item_in_json)
+        
+            os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
         
         #watch for received locations from game
         if os.path.exists(f"{ctx.save_game_folder}/locations.json"):  
@@ -264,6 +289,27 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
         if not os.path.exists(ctx.save_game_folder):
             os.mkdir(ctx.save_game_folder)
             
+        id: str
+        if "game_id" in args["slot_data"]:
+            id = args["slot_data"]["game_id"]
+        else:
+            id = str(uuid.uuid4())
+            args["slot_data"]["game_id"] = id
+            
+        ctx.game_id = id
+            
+        json_out: dict = {
+            "game_id": id
+        }
+        
+        item_in_json: str = json.dumps(json_out, indent=4)
+        
+        with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
+            f.write(item_in_json)
+    
+        os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
+
+            
     if cmd == "ReceivedItems":
         print("GOT SOME ITEMS")
         print(str(args["items"]))
@@ -318,6 +364,9 @@ def launch():
         
         if os.path.exists(f"{ctx.save_game_folder}/item.json"):
             os.remove(f"{ctx.save_game_folder}/item.json")
+            
+        if os.path.exists(f"{ctx.save_game_folder}/gameid.json"):
+            os.remove(f"{ctx.save_game_folder}/gameid.json")
             
         ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
         asyncio.create_task(
