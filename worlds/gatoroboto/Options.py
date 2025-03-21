@@ -5,8 +5,8 @@ from Options import Choice, Range, Toggle, OptionGroup, PerGameCommonOptions
 
 class RocketJumpsEnabled(Toggle):
     """
-        Option for whether or not player is required to know rocket jump tricks for progression. 
-        This enables tricks for entering and completing checks in heater core. 
+        Option for whether or not player is required to know rocket jump tricks for progression.
+        This enables tricks for entering and completing checks in heater core.
         Several other smaller checks throughout the run require these tricks.
     """
     display_name = "Enable Rocket Jump Tricks"

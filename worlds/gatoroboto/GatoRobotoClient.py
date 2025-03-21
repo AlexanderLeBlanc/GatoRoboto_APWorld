@@ -36,7 +36,7 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
         if isinstance(self.ctx, GatoRobotoContext):
             
             #os.makedirs(name=Utils.user_path("Gato Roboto/anim"), exist_ok=True)
-            tempInstall = steaminstall
+            tempInstall: str = steaminstall
             if not os.path.isfile(os.path.join(tempInstall, "data.win")):
                 tempInstall = None
             if tempInstall is None:
@@ -47,7 +47,9 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
                 tempInstall = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Gato Roboto"
                 if not os.path.exists(tempInstall):
                     tempInstall = "C:\\Program Files\\Steam\\steamapps\\common\\Gato Roboto"
-            if not os.path.exists(tempInstall) or not os.path.exists(tempInstall) or not os.path.isfile(os.path.join(tempInstall, "data.win")):
+            if (not os.path.exists(tempInstall) 
+                or not os.path.exists(tempInstall) 
+                or not os.path.isfile(os.path.join(tempInstall, "data.win"))):
                 self.output("ERROR: Cannot find Gato Roboto. Please rerun the command with the correct folder."
                             " command. \"/auto_patch (Steam directory)\".")
             else:                
@@ -61,32 +63,29 @@ class GatoRobotoCommandProcessor(ClientCommandProcessor):
             self.ctx.syncing = True
 
 class GatoRobotoContext(CommonContext):
-    tags = {"AP", "Online"}
-    game = "Gato Roboto"
-    command_processor = GatoRobotoCommandProcessor
-    save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
-    checks_to_consume = []
-    cur_client_items = []
-    read_client_items = False
-    cur_start_index = 0
+    tags: dict = {"AP", "Online"}
+    game: str = "Gato Roboto"
+    command_processor: GatoRobotoCommandProcessor = GatoRobotoCommandProcessor
+    save_game_folder: str = os.path.expandvars(r"%localappdata%/GatoRoboto")
+    checks_to_consume: list[int] = []
+    cur_client_items: list[int] = []
+    read_client_items: bool = False
+    cur_start_index: int = 0
     
     def __init__(self, server_address, password):
         super().__init__(server_address, password)
         self.game = "Gato Roboto"
         self.syncing = False
         
-        # Magical item handling value that I don't understand
-        self.items_handling = 0b111
-        
         # self.save_game_folder: Files go in this path to pass data between us and the actual game
         self.save_game_folder = os.path.expandvars(r"%localappdata%/GatoRoboto")
         
     def patch_game(self, filepath):
-        os.makedirs(name=filepath + "/VanillaData", exist_ok=True)
-        shutil.copy(filepath + "/data.win", filepath + "/VanillaData")
-        with open(filepath + "/data.win", "rb") as f:
-            patchedFile = bsdiff4.patch(f.read(), gatoroboto.data_path("patch.bsdiff"))
-        with open(filepath + "/data.win", "wb") as f:
+        os.makedirs(name=f"{filepath}/VanillaData", exist_ok=True)
+        shutil.copy(f"{filepath}/data.win", f"{filepath}/VanillaData")
+        with open(f"{filepath}/data.win", "rb") as f:
+            patchedFile: bytes = bsdiff4.patch(f.read(), gatoroboto.data_path("patch.bsdiff"))
+        with open(f"{filepath}/data.win", "wb") as f:
             f.write(patchedFile)
 
     async def server_auth(self, password_requested: bool = False):
@@ -96,7 +95,8 @@ class GatoRobotoContext(CommonContext):
         await self.get_username()
         await self.send_connect()
 
-    def on_package(self, cmd, args):        
+    def on_package(self, cmd, args):     
+        #remove for final   
         print("Got Package: " + cmd)
         
         if (cmd == 'Connected'):
@@ -129,7 +129,7 @@ class GatoRobotoContext(CommonContext):
         self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")
         
 async def game_watcher(ctx: GatoRobotoContext):    
-    printed_connecting = False
+    printed_connecting: bool = False
      
     while not ctx.exit_event.is_set():
         await asyncio.sleep(0.1)
@@ -139,13 +139,13 @@ async def game_watcher(ctx: GatoRobotoContext):
             printed_connecting = True
         
         #read initial data for syncing items with the client
-        if not ctx.read_client_items and os.path.exists(ctx.save_game_folder + "/init.json"):
+        if not ctx.read_client_items and os.path.exists(f"{ctx.save_game_folder}/init.json"):
             print("Received Init")
             ctx.command_processor.print_log("Connected to Game")
             
             try:
-                with open(ctx.save_game_folder + "/init.json", 'r+') as f:
-                    items_init = get_clean_game_comms_file(f)
+                with open(f"{ctx.save_game_folder}/init.json", 'r+') as f:
+                    items_init: dict = get_clean_game_comms_file(f)
                     ctx.cur_client_items = []
                     
                     for key in items_init:
@@ -153,17 +153,17 @@ async def game_watcher(ctx: GatoRobotoContext):
                         
                 ctx.read_client_items = True
                         
-                os.remove(ctx.save_game_folder + "/init.json")
+                os.remove(f"{ctx.save_game_folder}/init.json")
             except PermissionError:
                 print("⚠ File is locked by another program. Skipping read.")
                 await asyncio.sleep(0.3)
             
         #check if game disconnects
-        if os.path.exists(ctx.save_game_folder + "/off.json"):
+        if os.path.exists(f"{ctx.save_game_folder}/off.json"):
             print("Received off")
             ctx.command_processor.print_log("Lost Connection to Game")
             ctx.command_processor.print_log("Waiting for Connection to Game")
-            os.remove(ctx.save_game_folder + "/off.json")
+            os.remove(f"{ctx.save_game_folder}/off.json")
             ctx.cur_client_items = []
             ctx.read_client_items = False
             
@@ -171,15 +171,15 @@ async def game_watcher(ctx: GatoRobotoContext):
         flag = False
         for process in psutil.process_iter(attrs=["exe"]):
             try:
-                exe_path = process.info["exe"]
+                exe_path: str = process.info["exe"]
                 if exe_path and "gatoroboto" in exe_path.lower():  # ✅ Check if not None
                     flag = True
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
         
         #if client has restarted, re-request init file
-        if flag and not ctx.read_client_items and not os.path.exists(ctx.save_game_folder + "req_init.json"):
-            open(ctx.save_game_folder + "req_init.json", "a").close()
+        if flag and not ctx.read_client_items and not os.path.exists(f"{ctx.save_game_folder}/req_init.json"):
+            open(f"{ctx.save_game_folder}/req_init.json", "a").close()
         #handle game restart via hard close or crash
         elif not flag and ctx.read_client_items:
             ctx.command_processor.print_log("Lost Connection to Game")
@@ -188,17 +188,16 @@ async def game_watcher(ctx: GatoRobotoContext):
             ctx.read_client_items = False
         
         #watch for received locations from game
-        if os.path.exists(ctx.save_game_folder + "/locations.json"):  
+        if os.path.exists(f"{ctx.save_game_folder}/locations.json"):  
             print("Received Locations") 
             try:
-                with open(ctx.save_game_folder + "/locations.json", 'r+') as f:
-                    locations_in = get_clean_game_comms_file(f)
+                with open(f"{ctx.save_game_folder}/locations.json", "r+") as f:
+                    locations_in: dict = get_clean_game_comms_file(f)
                     
-                    sending = []
+                    sending: list[int] = []
                     
                     for key in locations_in:
                         if str(key).isdigit():
-                            #print("Location check: " + str(key) + " // " + str(ctx.missing_locations.__contains__(int(key))) + " // " + str(int(locations_in[str(key)]) > 0))
                             if ctx.missing_locations.__contains__(int(key)) and int(locations_in[str(key)]) > 0:
                                 print("Found Location to Send")
                                 sending.append(int(key))
@@ -206,7 +205,7 @@ async def game_watcher(ctx: GatoRobotoContext):
                     if len(sending) != 0:
                         await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
                 
-                os.remove(ctx.save_game_folder + "/locations.json")
+                os.remove(f"{ctx.save_game_folder}/locations.json")
             except PermissionError:
                 print("⚠ File is locked by another program, skipping read.")
                 await asyncio.sleep(0.3)
@@ -214,17 +213,21 @@ async def game_watcher(ctx: GatoRobotoContext):
                 print("⚠ Error in reading file, skipping read.")
         
         #check if wincon present
-        if os.path.exists(ctx.save_game_folder + "/victory.json"):
+        if os.path.exists(f"{ctx.save_game_folder}/victory.json"):
             print("Received Victory")
             if not ctx.finished_game:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+                
+            os.remove(f"{ctx.save_game_folder}/victory.json")
         
         #consume items in fifo order, filter out received items
-        if len(ctx.checks_to_consume) > 0 and ctx.read_client_items and not os.path.exists(ctx.save_game_folder + "/items.json"):
+        if (len(ctx.checks_to_consume) > 0 
+            and ctx.read_client_items 
+            and not os.path.exists(f"{ctx.save_game_folder}/items.json")):
             print("Received Items JSON")
-            flag = True
+            flag: bool = True
             while(len(ctx.checks_to_consume) > 0 and flag):
-                cur_item = ctx.checks_to_consume.pop(0)
+                cur_item: NetworkItem = ctx.checks_to_consume.pop(0)
                 
                 if not ctx.cur_client_items.__contains__(int(cur_item.item)):
                     ctx.cur_client_items.append(int(cur_item.item))
@@ -234,14 +237,14 @@ async def game_watcher(ctx: GatoRobotoContext):
                         "item_index": len(ctx.cur_client_items)
                     }
                     
-                    item_in_json = json.dumps(item_in, indent=4)
+                    item_in_json: str = json.dumps(item_in, indent=4)
             
-                    with open(ctx.save_game_folder + "/tmp_it.json", 'w') as f:
+                    with open(f"{ctx.save_game_folder}/tmp_it.json", 'w') as f:
                         f.write(item_in_json)
                 
-                    os.rename(ctx.save_game_folder + "/tmp_it.json", ctx.save_game_folder + "/items.json")
+                    os.rename(f"{ctx.save_game_folder}/tmp_it.json", f"{ctx.save_game_folder}/items.json")
 
-                    flag = True      
+                    flag = False      
         
         #resync, and attempt to send client all items received
         if ctx.syncing:
@@ -251,20 +254,7 @@ async def game_watcher(ctx: GatoRobotoContext):
                 sync_msg.append({"cmd": "LocationChecks", "locations": list(ctx.locations_checked)})
             await ctx.send_msgs(sync_msg)
             ctx.syncing = False
-
-def find_process_by_path(target_path):
-    """Check if a process is running from a specific path."""
-    for process in psutil.process_iter(attrs=["pid", "exe"]):
-        try:
-            if process.info["exe"] and target_path.lower() in process.info["exe"].lower():
-                print(f"Found process: PID {process.info['pid']} - {process.info['exe']}")
-                return True
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            continue
-    return False
-
-# Looks like most of these automatically call in the process_server_cmd() method in CommonClient.py
-# Not sure if we are overriding it or just executing our own code alongside it
+            
 async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
     if cmd == "Connected":
         print("CONNECTED SHII")
@@ -273,22 +263,12 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
         if not os.path.exists(ctx.save_game_folder):
             os.mkdir(ctx.save_game_folder)
             
-    elif cmd == "RoomInfo":
-        # Probably not necessary from looking at other clients
-        print("Info: " + str(ctx.seed_name) + " : " + str(args["seed_name"]))
-    elif cmd == "LocationInfo":
-        # Potentially for hinting?
-        print("Loc. Info: " + str(args["locations"]))
-    elif cmd == "RoomUpdate":
-        # Update checked locations in files for game
-        print("Room Updates")
-    elif cmd == "ReceivedItems":
-        # Big logical state machine to track item index into what item gets written to file
+    if cmd == "ReceivedItems":
         print("GOT SOME ITEMS")
         print(str(args["items"]))
         ctx.watcher_event.set()
         
-        start_index = args["index"]
+        start_index: int = args["index"]
         
         if start_index == 0:
             ctx.items_received = []
@@ -308,11 +288,7 @@ async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
             
             ctx.cur_start_index = start_index
 
-def get_clean_game_comms_file(f):
-    """
-    Reads a JSON file, removes any trailing or embedded null characters (\x00),
-    and ensures the file is valid JSON before saving the cleaned version.
-    """
+def get_clean_game_comms_file(f) -> dict:
     content = f.read()
 
     cleaned_content = content.replace("\x00", "").strip()
@@ -321,7 +297,7 @@ def get_clean_game_comms_file(f):
         cleaned_content += "}"
 
     try:
-        cleaned_json = json.loads(cleaned_content)
+        cleaned_json: dict = json.loads(cleaned_content)
     except json.JSONDecodeError:
         print("Error: Invalid JSON file, unable to fix.")
         return
@@ -339,8 +315,8 @@ def launch():
     async def _main():
         ctx = GatoRobotoContext(None, None)
         
-        if os.path.exists(ctx.save_game_folder + "/item.json"):
-            os.remove(ctx.save_game_folder + "/item.json")
+        if os.path.exists(f"{ctx.save_game_folder}/item.json"):
+            os.remove(f"{ctx.save_game_folder}/item.json")
             
         ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
         asyncio.create_task(

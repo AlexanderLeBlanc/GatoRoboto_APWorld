@@ -3,8 +3,17 @@ from typing import List
 from BaseClasses import ItemClassification, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
 from .Items import GatoRobotoItem, item_table, modules_item_data_table, cartidges_item_data_table
-from .Items import heater_events_item_data_table, aqueduct_events_item_data_table, vent_events_item_data_table, healthkits_item_data_table, item_data_table
-from .Locations import GatoRobotoLocation, location_table, healthkit_location_data_table, cartridge_location_data_table, module_location_data_table, event_location_data_table
+from .Items import (heater_events_item_data_table, 
+                    aqueduct_events_item_data_table, 
+                    vent_events_item_data_table, 
+                    healthkits_item_data_table, 
+                    item_data_table)
+from .Locations import (GatoRobotoLocation, 
+                        location_table, 
+                        healthkit_location_data_table, 
+                        cartridge_location_data_table, 
+                        module_location_data_table, 
+                        event_location_data_table)
 from .Names import ItemName
 from .Options import GatoRobotoOptions, gatoroboto_option_groups
 from multiprocessing import Process
@@ -33,7 +42,7 @@ icon_paths['kiki'] = Utils.user_path("worlds/gatoroboto/data", "Kiki.png")
 
 def data_path(file_name: str):
     import pkgutil
-    return pkgutil.get_data(__name__, "data/" + file_name)
+    return pkgutil.get_data(__name__, f"data/{file_name}")
 
 class GatoRobotoWebWorld(WebWorld):
     theme = "ice"
@@ -93,41 +102,40 @@ class GatoRobotoWorld(World):
         for region_name in region_data_table.keys():
             region = Region(region_name, self.player, self.multiworld)
             self.multiworld.regions.append(region)
-            
-        for loc_name, loc_data in healthkit_location_data_table.items():
-            print("Healtkit region: " + str(loc_data.region))
         
         #Create locations
         for region_name, region_data in region_data_table.items():
             region = self.multiworld.get_region(region_name, self.player)
             region.add_locations({
-                location_name: location_data.address for location_name, location_data in healthkit_location_data_table.items()
+                location_name: location_data.address 
+                for location_name, location_data in healthkit_location_data_table.items()
                 if location_data.region == region_name
             })
             region.add_locations({
-                location_name: location_data.address for location_name, location_data in cartridge_location_data_table.items()
+                location_name: location_data.address
+                for location_name, location_data in cartridge_location_data_table.items()
                 if location_data.region == region_name
             })
             region.add_locations({
-                location_name: location_data.address for location_name, location_data in module_location_data_table.items()
+                location_name: location_data.address 
+                for location_name, location_data in module_location_data_table.items()
                 if location_data.region == region_name
             })
             region.add_locations({
-                location_name: location_data.address for location_name, location_data in event_location_data_table.items()
+                location_name: location_data.address 
+                for location_name, location_data in event_location_data_table.items()
                 if location_data.region == region_name
             })
             
             region.add_exits(region_data_table[region_name].connecting_regions)
-            
-            print(f"Region: {region_name}, Size: {len(region.locations)}")
-            if region_name == RegionName.region_2:
-                for location in region.locations:
-                    print("Location Info for Region: " + str(location.name))
         
         #Victory logic
         victory_region = self.get_region(RegionName.region_7)
         victory_location = GatoRobotoLocation(self.player, "Gary Defeated", None, victory_region)
-        victory_location.place_locked_item(GatoRobotoItem("Victory",  ItemClassification.progression, None, self.player))
+        victory_location.place_locked_item(GatoRobotoItem("Victory",  
+                                                            ItemClassification.progression, 
+                                                            None, 
+                                                            self.player))
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         victory_region.locations.append(victory_location)
             

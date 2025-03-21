@@ -19,16 +19,18 @@ def set_rules(world: GatoRobotoWorld):
     set_rule(world.get_location(LocationName.cartridge_2),
              lambda state: state.has(ItemName.module_missile, world.player))
     set_rule(world.get_location(LocationName.module_2),
-             lambda state: state.has(ItemName.module_spinjump, world.player) and sum(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]) >= 3)
+             lambda state: state.has(ItemName.module_spinjump, world.player) 
+                              and sum(state.has(item, world.player) for item in [
+                                 ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
+                              ]) >= 3)
     
     
     #Set Checks for Nexus
     set_rule(world.get_region(RegionName.region_2).entrances[0],
             lambda state: state.has(ItemName.module_missile, world.player))
     set_rule(world.get_location(LocationName.healthkit_3), 
-             lambda state: state.has(ItemName.module_spinjump, world.player) or (world.options.rocket_jumps and state.has(ItemName.module_coolant, world.player)))
+             lambda state: state.has(ItemName.module_spinjump, world.player) 
+             or (world.options.rocket_jumps and state.has(ItemName.module_coolant, world.player)))
     set_rule(world.get_location(LocationName.healthkit_4), 
              lambda state: state.has(ItemName.module_spinjump, world.player) or (world.options.rocket_jumps))
     set_rule(world.get_location(LocationName.cartridge_3), 
@@ -68,13 +70,15 @@ def set_rules(world: GatoRobotoWorld):
                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
              ]) >= 3)
     set_rule(world.get_location(LocationName.cartridge_6), 
-            lambda state: state.has(ItemName.module_spinjump, world.player) and sum(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 3)
+            lambda state: state.has(ItemName.module_spinjump, world.player) 
+               and sum(state.has(item, world.player) for item in [
+                  ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
+               ]) >= 3)
     set_rule(world.get_location(LocationName.cartridge_7), 
-             lambda state: state.has(ItemName.module_spinjump, world.player) and sum(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 3)
+             lambda state: state.has(ItemName.module_spinjump, world.player) 
+               and sum(state.has(item, world.player) for item in [
+                  ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
+               ]) >= 3)
     set_rule(world.get_location(LocationName.cartridge_8), 
              lambda state: sum(state.has(item, world.player) for item in [
                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
@@ -166,13 +170,15 @@ def set_rules(world: GatoRobotoWorld):
     
     #Incubator logic
     set_rule(world.get_region(RegionName.region_6).entrances[0],
-        lambda state: state.has(ItemName.module_decoder, world.player) and sum(state.has(item, world.player) for item in [
+        lambda state: state.has(ItemName.module_decoder, world.player) 
+             and sum(state.has(item, world.player) for item in [
                 ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
              ]) >= 3 and sum(state.has(item, world.player) for item in [
                 ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
              ]) >= 3)
     set_rule(world.get_location(LocationName.healthkit_10), 
-            lambda state: state.has(ItemName.module_spinjump, world.player) and state.has(ItemName.module_hopper, world.player) and state.has(ItemName.module_phase, world.player))
+            lambda state: state.has(ItemName.module_spinjump, world.player) 
+               and state.has(ItemName.module_hopper, world.player) and state.has(ItemName.module_phase, world.player))
     
     
     
