@@ -22,7 +22,7 @@ healthkit_location_data_table: Dict[str, str] = {
     LocationName.healthkit_6: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 1606),
     LocationName.healthkit_7: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 417),
     LocationName.healthkit_8: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 1713),
-    LocationName.healthkit_9: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 915),
+    LocationName.healthkit_9: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 816),
     LocationName.healthkit_10: GatoRobotoLocationData(RegionName.region_6, gatoroboto_base_id + 2413),
 }
 
@@ -38,8 +38,8 @@ cartridge_location_data_table: Dict[str, str] = {
     LocationName.cartridge_9: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 1119),
     LocationName.cartridge_10: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 414),
     LocationName.cartridge_11: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 1915),
-    LocationName.cartridge_12: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1613),
-    LocationName.cartridge_13: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 517),
+    LocationName.cartridge_12: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1614),
+    LocationName.cartridge_13: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 518),
     LocationName.cartridge_14: GatoRobotoLocationData(RegionName.region_6, gatoroboto_base_id + 1514),
 }
 
@@ -51,7 +51,7 @@ module_location_data_table: Dict[str, str] = {
     LocationName.module_5: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 2410),
     LocationName.module_6: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 113),
     LocationName.module_7: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 1114),
-    LocationName.module_8: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1718),
+    LocationName.module_8: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1719),
 }
 
 event_location_data_table: Dict[str, str] = {
@@ -61,9 +61,9 @@ event_location_data_table: Dict[str, str] = {
     LocationName.heater_1: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 19),
     LocationName.heater_2: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 313),
     LocationName.heater_3: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 15),
-    LocationName.vent_1: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1112),
-    LocationName.vent_2: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1122),
-    LocationName.vent_3: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 521)
+    LocationName.vent_1: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1113),
+    LocationName.vent_2: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 1123),
+    LocationName.vent_3: GatoRobotoLocationData(RegionName.region_5, gatoroboto_base_id + 522)
 }
 
 location_data_table: Dict[str, str] = {
