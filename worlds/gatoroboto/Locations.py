@@ -34,7 +34,7 @@ cartridge_location_data_table: Dict[str, str] = {
     LocationName.cartridge_5: GatoRobotoLocationData(RegionName.region_2, gatoroboto_base_id + 2113),
     LocationName.cartridge_6: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 1106),
     LocationName.cartridge_7: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 707),
-    LocationName.cartridge_8: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 2105),
+    LocationName.cartridge_8: GatoRobotoLocationData(RegionName.region_3, gatoroboto_base_id + 2106),
     LocationName.cartridge_9: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 1119),
     LocationName.cartridge_10: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 414),
     LocationName.cartridge_11: GatoRobotoLocationData(RegionName.region_4, gatoroboto_base_id + 1915),
