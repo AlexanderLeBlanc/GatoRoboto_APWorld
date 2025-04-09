@@ -163,24 +163,28 @@ async def game_watcher(ctx: GatoRobotoContext):
             
         #check if game disconnects
         if os.path.exists(f"{ctx.save_game_folder}/off.json"):
-            print("Received off")
-            ctx.command_processor.print_log("Lost Connection to Game")
-            ctx.command_processor.print_log("Waiting for Connection to Game")
-            os.remove(f"{ctx.save_game_folder}/off.json")
-            ctx.cur_client_items = []
-            ctx.read_client_items = False
+            try:
+                print("Received off")
+                ctx.command_processor.print_log("Lost Connection to Game")
+                ctx.command_processor.print_log("Waiting for Connection to Game")
+                os.remove(f"{ctx.save_game_folder}/off.json")
+                ctx.cur_client_items = []
+                ctx.read_client_items = False
+                
+                #send game id for syncing
+                json_out: dict = {
+                    "game_id": ctx.game_id
+                }
+                
+                item_in_json: str = json.dumps(json_out, indent=4)
+                
+                with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
+                    f.write(item_in_json)
             
-            #send game id for syncing
-            json_out: dict = {
-                "game_id": ctx.game_id
-            }
-            
-            item_in_json: str = json.dumps(json_out, indent=4)
-            
-            with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
-                f.write(item_in_json)
-        
-            os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
+                os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
+            except PermissionError:
+                print("⚠ File is locked by another program, skipping read.")
+                await asyncio.sleep(0.3)
             
         #handle client restarts and game crashes via exe check
         flag = False
@@ -192,29 +196,33 @@ async def game_watcher(ctx: GatoRobotoContext):
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
         
-        #if client has restarted, re-request init file
-        if flag and not ctx.read_client_items and not os.path.exists(f"{ctx.save_game_folder}/req_init.json"):
-            open(f"{ctx.save_game_folder}/req_init.json", "a").close()
-        #handle game restart via hard close or crash
-        elif not flag and ctx.read_client_items:
-            ctx.command_processor.print_log("Lost Connection to Game")
-            ctx.command_processor.print_log("Waiting for Connection to Game")
-            ctx.cur_client_items = []
-            ctx.read_client_items = False
+        try:
+            #if client has restarted, re-request init file
+            if flag and not ctx.read_client_items and not os.path.exists(f"{ctx.save_game_folder}/req_init.json"):
+                open(f"{ctx.save_game_folder}/req_init.json", "a").close()
+            #handle game restart via hard close or crash
+            elif not flag and ctx.read_client_items:
+                ctx.command_processor.print_log("Lost Connection to Game")
+                ctx.command_processor.print_log("Waiting for Connection to Game")
+                ctx.cur_client_items = []
+                ctx.read_client_items = False
+                
+                if os.path.exists(f"{ctx.save_game_folder}/gameid.json"):
+                    os.remove(f"{ctx.save_game_folder}/gameid.json")
+                
+                json_out: dict = {
+                    "game_id": ctx.game_id
+                }
+                
+                item_in_json: str = json.dumps(json_out, indent=4)
+                
+                with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
+                    f.write(item_in_json)
             
-            if os.path.exists(f"{ctx.save_game_folder}/gameid.json"):
-                os.remove(f"{ctx.save_game_folder}/gameid.json")
-            
-            json_out: dict = {
-                "game_id": ctx.game_id
-            }
-            
-            item_in_json: str = json.dumps(json_out, indent=4)
-            
-            with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
-                f.write(item_in_json)
-        
-            os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
+                os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
+        except PermissionError:
+            print("⚠ File is locked by another program, skipping read.")
+            await asyncio.sleep(0.3)
         
         #watch for received locations from game
         if os.path.exists(f"{ctx.save_game_folder}/locations.json"):  
@@ -242,38 +250,71 @@ async def game_watcher(ctx: GatoRobotoContext):
                 print("⚠ Error in reading file, skipping read.")
         
         #check if wincon present
-        if os.path.exists(f"{ctx.save_game_folder}/victory.json"):
-            print("Received Victory")
-            if not ctx.finished_game:
+        if os.path.exists(f"{ctx.save_game_folder}/victory.json") and not ctx.finished_game:
+            try:
+                print("Received Victory")
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
-                
-            os.remove(f"{ctx.save_game_folder}/victory.json")
+                    
+                os.remove(f"{ctx.save_game_folder}/victory.json")
+            except PermissionError:
+                print("⚠ File is locked by another program, skipping read.")
+                await asyncio.sleep(0.3)
+            
+        if os.path.exists(f"{ctx.save_game_folder}/cur_region.json"):
+            try:
+                print("New Region")
+                with open(f"{ctx.save_game_folder}/cur_region.json", "r+") as f:
+                    locations_in: dict = get_clean_game_comms_file(f)
+                    
+                    await ctx.send_msgs([{"cmd": "Bounce", "slots": [ctx.slot],
+                        "data": {
+                            "type": "MapUpdate",
+                            "mapId": locations_in["Region"],
+                        }
+                    }])
+                    
+                os.remove(f"{ctx.save_game_folder}/cur_region.json")
+            except PermissionError:
+                print("⚠ File is locked by another program, skipping read.")
+                await asyncio.sleep(0.3)
         
         #consume items in fifo order, filter out received items
-        if (len(ctx.checks_to_consume) > 0 
-            and ctx.read_client_items 
-            and not os.path.exists(f"{ctx.save_game_folder}/items.json")):
-            print("Received Items JSON")
-            flag: bool = True
-            while(len(ctx.checks_to_consume) > 0 and flag):
-                cur_item: NetworkItem = ctx.checks_to_consume.pop(0)
-                
-                if not ctx.cur_client_items.__contains__(int(cur_item.item)):
-                    ctx.cur_client_items.append(int(cur_item.item))
+        try:
+            if (len(ctx.checks_to_consume) > 0 
+                and ctx.read_client_items 
+                and not os.path.exists(f"{ctx.save_game_folder}/items.json")):
+                print("Received Items JSON")
+                flag: bool = True
+                while(len(ctx.checks_to_consume) > 0 and flag):
+                    cur_item: NetworkItem = ctx.checks_to_consume.pop(0)
                     
-                    item_in = {
-                        "item": int(cur_item.item),
-                        "item_index": len(ctx.cur_client_items)
-                    }
-                    
-                    item_in_json: str = json.dumps(item_in, indent=4)
-            
-                    with open(f"{ctx.save_game_folder}/tmp_it.json", 'w') as f:
-                        f.write(item_in_json)
+                    if not ctx.cur_client_items.__contains__(int(cur_item.item)):
+                        ctx.cur_client_items.append(int(cur_item.item))
+                        
+                        item_in = {
+                            "item": int(cur_item.item),
+                            "item_index": len(ctx.cur_client_items)
+                        }
+                        
+                        item_in_json: str = json.dumps(item_in, indent=4)
                 
-                    os.rename(f"{ctx.save_game_folder}/tmp_it.json", f"{ctx.save_game_folder}/items.json")
+                        with open(f"{ctx.save_game_folder}/tmp_it.json", 'w') as f:
+                            f.write(item_in_json)
+                    
+                        os.rename(f"{ctx.save_game_folder}/tmp_it.json", f"{ctx.save_game_folder}/items.json")
 
-                    flag = False      
+                        flag = False    
+                        
+                    rec_flag: bool = False
+                    for item in ctx.items_received:
+                        if item.item == cur_item.item:
+                            rec_flag = True
+                    
+                    if not rec_flag:
+                        ctx.items_received.append(cur_item)
+        except PermissionError:
+                print("⚠ File is locked by another program, skipping read.")
+                await asyncio.sleep(0.3)
         
         #resync, and attempt to send client all items received
         if ctx.syncing:
