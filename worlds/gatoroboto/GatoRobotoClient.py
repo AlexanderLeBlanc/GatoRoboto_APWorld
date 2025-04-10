@@ -269,7 +269,7 @@ async def game_watcher(ctx: GatoRobotoContext):
                     await ctx.send_msgs([{"cmd": "Bounce", "slots": [ctx.slot],
                         "data": {
                             "type": "MapUpdate",
-                            "mapId": locations_in["Region"],
+                            "mapId": int(locations_in["Region"]),
                         }
                     }])
                     
@@ -326,6 +326,9 @@ async def game_watcher(ctx: GatoRobotoContext):
             ctx.syncing = False
             
 async def process_gatoroboto_cmd(ctx: GatoRobotoContext, cmd: str, args: dict):
+    if cmd == "Bounced":
+        print(args)
+    
     if cmd == "Connected":
         print("CONNECTED SHII")
         
