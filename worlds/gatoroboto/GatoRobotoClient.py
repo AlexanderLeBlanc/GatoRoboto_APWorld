@@ -152,7 +152,8 @@ async def game_watcher(ctx: GatoRobotoContext):
                     ctx.cur_client_items = []
                     
                     for key in items_init:
-                        ctx.cur_client_items.append(int(key))
+                        if key != "game_id":
+                            ctx.cur_client_items.append(int(key))
                         
                 ctx.read_client_items = True
                         
@@ -180,6 +181,9 @@ async def game_watcher(ctx: GatoRobotoContext):
                 
                 with open(f"{ctx.save_game_folder}/tmp_id.json", 'w') as f:
                     f.write(item_in_json)
+            
+                if os.path.exists(f"{ctx.save_game_folder}/gameid.json"):
+                    os.remove(f"{ctx.save_game_folder}/gameid.json")
             
                 os.rename(f"{ctx.save_game_folder}/tmp_id.json", f"{ctx.save_game_folder}/gameid.json")
             except PermissionError:

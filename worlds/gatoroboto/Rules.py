@@ -103,7 +103,9 @@ def set_rules(world: GatoRobotoWorld):
     set_rule(world.get_location(LocationName.aqueduct_3), 
              lambda state: sum(state.has(item, world.player) for item in [
                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 2)
+             ]) == 2 or (world.options.rocket_jumps and sum(state.has(item, world.player) for item in [
+                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
+             ]) >= 2))
     
     #Heater Logic
     set_rule(world.get_region(RegionName.region_4).entrances[0],
