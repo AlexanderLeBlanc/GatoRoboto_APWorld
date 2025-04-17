@@ -3,34 +3,56 @@ from dataclasses import dataclass
 ## Add deathlink later!!!
 from Options import Choice, Range, Toggle, OptionGroup, PerGameCommonOptions
 
-class RocketJumpsEnabled(Toggle):
+class ButtonMash(Toggle):
     """
-        Option for whether or not player is required to know rocket jump tricks for progression.
-        This enables tricks for entering and completing checks in heater core.
-        Several other smaller checks throughout the run require these tricks.
+        Option to enable areas and checks that can be accessed early through button mashing
     """
-    display_name = "Enable Rocket Jump Tricks"
+    display_name = "Button Mash Areas"
+    
+class PreciseInput(Toggle):
+    """
+        Option to enable areas and checks that can be accessed early through precise input
+    """
+    display_name = "Precise Input Areas"
+        
+class WaterMech(Toggle):
+    """
+        Option to enable areas and checks that can be accessed early through the water mech glitch
+    """
+    display_name = "Water Mech Areas"
+            
+class TinyMech(Toggle):
+    """
+        Option to enable areas and checks that can be accessed early through the tiny mech glitch
+    """
+    display_name = "Tiny Mech Areas"
 
-class LogicDifficulty(Choice):
+class RocketJumps(Choice):
     """
         Vanilla: the game as it was intended
-        Vanilla+: all skips that aren't glitches (early catridges in Nexus, spin jump tricks)
-        Glitched: all the glitches you know and love
+        Single Jumps: checks accessed through a single rocket jump
+        Chained Jumps: checks accessed through a one or more rocket jump
     """
-    display_name = "Logic Difficulty"
+    display_name = "Rocket Jump Options"
     option_vanilla = 0
-    option_vanilla_plus = 1
-    option_glitched = 2
+    option_single = 1
+    option_chains = 2
     default = 0
     
 gatoroboto_option_groups = [
     OptionGroup("Logic Options", [
-        RocketJumpsEnabled,
-        LogicDifficulty
+        RocketJumps,
+        ButtonMash,
+        PreciseInput,
+        WaterMech,
+        TinyMech
     ])
 ]
 
 @dataclass
 class GatoRobotoOptions(PerGameCommonOptions):
-    rocket_jumps: RocketJumpsEnabled
-    logic_difficulty: LogicDifficulty
+    rocket_jumps: RocketJumps
+    button_mash: ButtonMash
+    precise_input: PreciseInput
+    water_mech: WaterMech
+    tiny_mech: TinyMech

@@ -20,17 +20,21 @@ def set_rules(world: GatoRobotoWorld):
              lambda state: 
                 (state.has(ItemName.module_missile, world.player) 
                  and state.has(ItemName.module_spinjump, world.player))
-                or world.options.rocket_jumps)
+                or world.options.rocket_jumps == "chains")
     set_rule(world.get_location(LocationName.module_2),
              lambda state: state.has(ItemName.module_spinjump, world.player) 
                               and all(state.has(item, world.player) for item in [
                                  ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
                               ])
                               and all(state.has(item, world.player) for item in [
-                                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
+                                 ItemName.progressive_aqueduct_1, 
+                                 ItemName.progressive_aqueduct_2, 
+                                 ItemName.progressive_aqueduct_3
                               ])
                               and all(state.has(item, world.player) for item in [
-                                 ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
+                                 ItemName.progressive_heater_1, 
+                                 ItemName.progressive_heater_2, 
+                                 ItemName.progressive_heater_3
                               ]))
     
     
@@ -39,19 +43,22 @@ def set_rules(world: GatoRobotoWorld):
             lambda state: state.has(ItemName.module_missile, world.player))
     set_rule(world.get_location(LocationName.healthkit_3), 
              lambda state: state.has(ItemName.module_spinjump, world.player) 
-             or (world.options.rocket_jumps and state.has(ItemName.module_coolant, world.player)))
+             or (world.options.rocket_jumps == "chains"))
     set_rule(world.get_location(LocationName.healthkit_4), 
-             lambda state: state.has(ItemName.module_spinjump, world.player) or (world.options.rocket_jumps))
+             lambda state: state.has(ItemName.module_spinjump, world.player) 
+             or (world.options.rocket_jumps == "chains"))
     set_rule(world.get_location(LocationName.cartridge_3), 
              lambda state: sum(state.has(item, world.player) for item in [
                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 2)
+             ]) >= 2 or world.options.water_mech)
     set_rule(world.get_location(LocationName.cartridge_4), 
-            lambda state: state.has(ItemName.module_spinjump, world.player) or world.options.logic_difficulty == 1)
+            lambda state: state.has(ItemName.module_spinjump, world.player) 
+            or (world.options.rocket_jumps == "chains" and state.has(ItemName.module_coolant, world.player)) 
+            or world.options.precise_input)
     set_rule(world.get_location(LocationName.cartridge_5), 
              lambda state: all(state.has(item, world.player) for item in [
                 ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]) or world.options.logic_difficulty == 1)
+             ]) or (world.options.rocket_jumps == "chains" and world.options.button_mash))
     set_rule(world.get_location(LocationName.module_3), 
              lambda state: sum(state.has(item, world.player) for item in [
                 ItemName.cartridge_1, ItemName.cartridge_2, ItemName.cartridge_3,
@@ -73,7 +80,7 @@ def set_rules(world: GatoRobotoWorld):
     set_rule(world.get_location(LocationName.healthkit_5), 
             lambda state: any(state.has(item, world.player) for item in [
                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]))
+             ]) or world.options.water_mech)
     set_rule(world.get_location(LocationName.healthkit_6), 
              lambda state: all(state.has(item, world.player) for item in [
                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
@@ -109,7 +116,9 @@ def set_rules(world: GatoRobotoWorld):
     
     #Heater Logic
     set_rule(world.get_region(RegionName.region_4).entrances[0],
-             lambda state: state.has(ItemName.module_spinjump, world.player) or world.options.rocket_jumps)
+             lambda state: state.has(ItemName.module_spinjump, world.player) 
+             or world.options.rocket_jumps == "single"
+             or world.options.rocket_jumps == "chains")
     set_rule(world.get_location(LocationName.healthkit_7), 
              lambda state: all(state.has(item, world.player) for item in [
                 ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
@@ -149,11 +158,11 @@ def set_rules(world: GatoRobotoWorld):
     
     #Ventilation logic
     set_rule(world.get_region(RegionName.region_5).entrances[0],
-        lambda state: sum(state.has(item, world.player) for item in [
+        lambda state: (sum(state.has(item, world.player) for item in [
                 ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
              ]) >= 3 and sum(state.has(item, world.player) for item in [
                 ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) >= 3)
+             ]) >= 3) or world.options.tiny_mech)
     set_rule(world.get_location(LocationName.healthkit_9), 
              lambda state: sum(state.has(item, world.player) for item in [
                 ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3

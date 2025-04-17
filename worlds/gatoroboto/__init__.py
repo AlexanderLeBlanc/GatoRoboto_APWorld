@@ -18,6 +18,7 @@ from .Names import ItemName
 from .Options import GatoRobotoOptions, gatoroboto_option_groups
 from multiprocessing import Process
 from worlds.LauncherComponents import Type, launch_subprocess, Component, icon_paths, components
+from .Presets import gatoroboto_options_presets
 import Utils
 
 from .Names import RegionName
@@ -57,12 +58,11 @@ class GatoRobotoWebWorld(WebWorld):
     )
     
     tutorials = [setup_en]
-    
+    options_presets = gatoroboto_options_presets
     option_groups = gatoroboto_option_groups
     
 class GatoRobotoWorld(World):
     """Some game description"""
-    print("seeing if I can get logs?")
     #Class Data
     game = "Gato Roboto"
     web = GatoRobotoWebWorld()
@@ -76,7 +76,6 @@ class GatoRobotoWorld(World):
         return GatoRobotoItem(name, item_data_table[name].type, item_data_table[name].code, self.player)
     
     def create_items(self) -> None:
-        print("create items?")
         item_pool: List[GatoRobotoItem] = []
         item_count: 32
         item_pool += [self.create_item(name) 
@@ -93,8 +92,6 @@ class GatoRobotoWorld(World):
                 for name in vent_events_item_data_table.keys()]
         
         self.multiworld.itempool += item_pool
-        
-        print("end create items?")
     
     def create_regions(self) -> None:
         from .Regions import region_data_table
@@ -151,5 +148,3 @@ class GatoRobotoWorld(World):
             "rocket_jumps": self.options.rocket_jumps.value,
             "logic_difficulty": self.options.logic_difficulty.value
         }
-        
-    print("end of init file")
