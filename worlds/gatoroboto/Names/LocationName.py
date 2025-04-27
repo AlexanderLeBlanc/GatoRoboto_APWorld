@@ -1,52 +1,113 @@
+from typing import List
+
 # Healthkit Locations
-healthkit_1 = "West Landing Site Healthkit Location"
-healthkit_2 = "East Landing Site Healthkit Location"
-healthkit_3 = "West Nexus Healthkit Location"
-healthkit_4 = "East Nexus Healthkit Location"
-healthkit_5 = "West Aquaducts Healthkit Location"
-healthkit_6 = "East Aquaducts Healthkit Location"
-healthkit_7 = "West Heater Healthkit Location"
-healthkit_8 = "East Heater Healthkit Location"
-healthkit_9 = "Ventilation Healthkit Location"
-healthkit_10 = "Incubator Healthkit Location"
+loc_healthkit_landing_site_west = "West Landing Site Healthkit Location"
+loc_healthkit_landing_site_east = "East Landing Site Healthkit Location"
+loc_healthkit_nexus_west = "West Nexus Healthkit Location"
+loc_healthkit_nexus_east = "East Nexus Healthkit Location"
+loc_healthkit_aqueducts_west = "West Aqueducts Healthkit Location"
+loc_healthkit_aqueducts_east = "East Aqueducts Healthkit Location"
+loc_healthkit_heater_core_west = "West Heater Core Healthkit Location"
+loc_healthkit_heater_core_east = "East Heater Core Healthkit Location"
+loc_healthkit_ventilation = "Ventilation Healthkit Location"
+loc_healthkit_incubator = "Incubator Healthkit Location"
 
-#Cartridge Locations
-cartridge_1 = "Bark Palette Cartridge Location"
-cartridge_2 = "Nicotine Palette Cartridge Location"
-cartridge_3 = "Coffee Stain Palette Cartridge Location"
-cartridge_4 = "Urine Palette Cartridge Location"
-cartridge_5 = "Swamp Matcha Palette Cartridge Location"
-cartridge_6 = "Port Palette Cartridge Location"
-cartridge_7 = "Goop Palette Cartridge Location"
-cartridge_8 = "Starboard Palette Cartridge Location"
-cartridge_9 = "Virtual Cat Palette Cartridge Location"
-cartridge_10 = "Meowtrix Palette Cartridge Location"
-cartridge_11 = "Chewed Gum Palette Cartridge Location"
-cartridge_12 = "Gris Palette Cartridge Location"
-cartridge_13 = "Grape Palette Cartridge Location"
-cartridge_14 = "Tamagato Palette Cartridge Location"
+HealthkitLocations: List[str] = [
+    loc_healthkit_landing_site_west,
+    loc_healthkit_landing_site_east,
+    loc_healthkit_nexus_west,
+    loc_healthkit_nexus_east,
+    loc_healthkit_aqueducts_west,
+    loc_healthkit_aqueducts_east,
+    loc_healthkit_heater_core_west,
+    loc_healthkit_heater_core_east,
+    loc_healthkit_ventilation,
+    loc_healthkit_incubator
+]
 
-#Module Locations
-module_1 = "Missile Module Location"
-module_2 = "Decoder Module Location"
-module_3 = "Repeater Module Location"
-module_4 = "Hopper Module Location"
-module_5 = "Spin Jump Module Location"
-module_6 = "Coolant Module Location"
-module_7 = "Phase Module Location"
-module_8 = "Big Shot Module Location"
+# Cartridge Locations
+loc_cartridge_bark = "Bark Palette Cartridge Location"
+loc_cartridge_nicotine = "Nicotine Palette Cartridge Location"
+loc_cartridge_coffee_stain = "Coffee Stain Palette Cartridge Location"
+loc_cartridge_urine = "Urine Palette Cartridge Location"
+loc_cartridge_swamp_matcha = "Swamp Matcha Palette Cartridge Location"
+loc_cartridge_port = "Port Palette Cartridge Location"
+loc_cartridge_goop = "Goop Palette Cartridge Location"
+loc_cartridge_starboard = "Starboard Palette Cartridge Location"
+loc_cartridge_virtual_cat = "Virtual Cat Palette Cartridge Location"
+loc_cartridge_meowtrix = "Meowtrix Palette Cartridge Location"
+loc_cartridge_chewed_gum = "Chewed Gum Palette Cartridge Location"
+loc_cartridge_gris = "Gris Palette Cartridge Location"
+loc_cartridge_grape = "Grape Palette Cartridge Location"
+loc_cartridge_tamagato = "Tamagato Palette Cartridge Location"
 
-#Treadmill Locations
-aqueduct_1 = "Progressive Aqueducts 1"
-aqueduct_2 = "Progressive Aqueducts 2"
-aqueduct_3 = "Progressive Aqueducts 3"
+CartridgeLocations: List[str] = [
+    loc_cartridge_bark,
+    loc_cartridge_nicotine,
+    loc_cartridge_coffee_stain,
+    loc_cartridge_urine,
+    loc_cartridge_swamp_matcha,
+    loc_cartridge_port,
+    loc_cartridge_goop,
+    loc_cartridge_starboard,
+    loc_cartridge_virtual_cat,
+    loc_cartridge_meowtrix,
+    loc_cartridge_chewed_gum,
+    loc_cartridge_gris,
+    loc_cartridge_grape,
+    loc_cartridge_tamagato
+]
 
-#Hotboy Locations
-heater_1 = "Progressive Heater Core 1"
-heater_2 = "Progressive Heater Core 2"
-heater_3 = "Progressive Heater Core 3"
+# Module Locations
+loc_module_missile = "Missile Module Location"
+loc_module_decoder = "Decoder Module Location"
+loc_module_repeater = "Repeater Module Location"
+loc_module_hopper = "Hopper Module Location"
+loc_module_spinjump = "Spin Jump Module Location"
+loc_module_coolant = "Coolant Module Location"
+loc_module_phase = "Phase Module Location"
+loc_module_bigshot = "Big Shot Module Location"
 
-#Vent Button Locations
-vent_1 = "Progressive Ventilation 1"
-vent_2 = "Progressive Ventilation 2"
-vent_3 = "Progressive Ventilation 3"
+ModuleLocations: List[str] = [
+    loc_module_missile,
+    loc_module_decoder,
+    loc_module_repeater,
+    loc_module_hopper,
+    loc_module_spinjump,
+    loc_module_coolant,
+    loc_module_phase,
+    loc_module_bigshot
+]
+
+# Aqueducts Progressive Locations
+loc_progressive_aqueducts_1 = "Progressive Aqueducts 1"
+loc_progressive_aqueducts_2 = "Progressive Aqueducts 2"
+loc_progressive_aqueducts_3 = "Progressive Aqueducts 3"
+
+ProgressiveAqueductsLocations: List[str] = [
+    loc_progressive_aqueducts_1,
+    loc_progressive_aqueducts_2,
+    loc_progressive_aqueducts_3
+]
+
+# Heater Core Progressive Locations
+loc_progressive_heater_core_1 = "Progressive Heater Core 1"
+loc_progressive_heater_core_2 = "Progressive Heater Core 2"
+loc_progressive_heater_core_3 = "Progressive Heater Core 3"
+
+ProgressiveHeaterCoreLocations: List[str] = [
+    loc_progressive_heater_core_1,
+    loc_progressive_heater_core_2,
+    loc_progressive_heater_core_3
+]
+
+# Ventilation Progressive Locations
+loc_progressive_ventilation_1 = "Progressive Ventilation 1"
+loc_progressive_ventilation_2 = "Progressive Ventilation 2"
+loc_progressive_ventilation_3 = "Progressive Ventilation 3"
+
+ProgressiveVentilationLocations: List[str] = [
+    loc_progressive_ventilation_1,
+    loc_progressive_ventilation_2,
+    loc_progressive_ventilation_3
+]

@@ -1,213 +1,146 @@
-import math
+from typing import Dict, Any
 
-from BaseClasses import ItemClassification
-from worlds.generic.Rules import add_rule, item_name_in_locations, set_rule
-from . import Options
+from BaseClasses import CollectionState
+from worlds.generic.Rules import set_rule
+
 from . import GatoRobotoWorld
-from .Names import RegionName
-from .Names import ItemName
-from .Names import LocationName
+from .Names import RegionName, ItemName, LocationName
 
-from .Locations import GatoRobotoLocation
+def set_rules(world: GatoRobotoWorld):
+    player = world.player
 
-def set_rules(world: GatoRobotoWorld):    
-    #Set Checks for Landing Site
-    set_rule(world.get_location(LocationName.healthkit_2),
-             lambda state: state.has(ItemName.module_missile, world.player))
-    set_rule(world.get_location(LocationName.cartridge_1),
-             lambda state: state.has(ItemName.module_missile, world.player))
-    set_rule(world.get_location(LocationName.cartridge_2),
-             lambda state: 
-                (state.has(ItemName.module_missile, world.player) 
-                 and state.has(ItemName.module_spinjump, world.player))
-                or world.options.rocket_jumps == "chains")
-    set_rule(world.get_location(LocationName.module_2),
-             lambda state: state.has(ItemName.module_spinjump, world.player) 
-                              and all(state.has(item, world.player) for item in [
-                                 ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-                              ])
-                              and all(state.has(item, world.player) for item in [
-                                 ItemName.progressive_aqueduct_1, 
-                                 ItemName.progressive_aqueduct_2, 
-                                 ItemName.progressive_aqueduct_3
-                              ])
-                              and all(state.has(item, world.player) for item in [
-                                 ItemName.progressive_heater_1, 
-                                 ItemName.progressive_heater_2, 
-                                 ItemName.progressive_heater_3
-                              ]))
-    
-    
-    #Set Checks for Nexus
-    set_rule(world.get_region(RegionName.region_2).entrances[0],
-            lambda state: state.has(ItemName.module_missile, world.player))
-    set_rule(world.get_location(LocationName.healthkit_3), 
-             lambda state: state.has(ItemName.module_spinjump, world.player) 
-             or (world.options.rocket_jumps == "chains"))
-    set_rule(world.get_location(LocationName.healthkit_4), 
-             lambda state: state.has(ItemName.module_spinjump, world.player) 
-             or (world.options.rocket_jumps == "chains"))
-    set_rule(world.get_location(LocationName.cartridge_3), 
-             lambda state: sum(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 2 or world.options.water_mech)
-    set_rule(world.get_location(LocationName.cartridge_4), 
-            lambda state: state.has(ItemName.module_spinjump, world.player) 
-            or (world.options.rocket_jumps == "chains" and state.has(ItemName.module_coolant, world.player)) 
-            or world.options.precise_input)
-    set_rule(world.get_location(LocationName.cartridge_5), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]) or (world.options.rocket_jumps == "chains" and world.options.button_mash))
-    set_rule(world.get_location(LocationName.module_3), 
-             lambda state: sum(state.has(item, world.player) for item in [
-                ItemName.cartridge_1, ItemName.cartridge_2, ItemName.cartridge_3,
-                ItemName.cartridge_4, ItemName.cartridge_5, ItemName.cartridge_6,
-                ItemName.cartridge_7, ItemName.cartridge_8, ItemName.cartridge_9,
-                ItemName.cartridge_10, ItemName.cartridge_11, ItemName.cartridge_12,
-                ItemName.cartridge_13, ItemName.cartridge_14
-             ]) >= 7)
-    set_rule(world.get_location(LocationName.module_4), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.cartridge_1, ItemName.cartridge_2, ItemName.cartridge_3,
-                ItemName.cartridge_4, ItemName.cartridge_5, ItemName.cartridge_6,
-                ItemName.cartridge_7, ItemName.cartridge_8, ItemName.cartridge_9,
-                ItemName.cartridge_10, ItemName.cartridge_11, ItemName.cartridge_12,
-                ItemName.cartridge_13, ItemName.cartridge_14
-             ]))
-    
-    #Set Checks for Aquaducts
-    set_rule(world.get_location(LocationName.healthkit_5), 
-            lambda state: any(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) or world.options.water_mech)
-    set_rule(world.get_location(LocationName.healthkit_6), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]))
-    set_rule(world.get_location(LocationName.cartridge_6), 
-            lambda state: state.has(ItemName.module_spinjump, world.player) 
-               and all(state.has(item, world.player) for item in [
-                  ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-               ]))
-    set_rule(world.get_location(LocationName.cartridge_7), 
-             lambda state: state.has(ItemName.module_spinjump, world.player) 
-               and all(state.has(item, world.player) for item in [
-                  ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-               ]))
-    set_rule(world.get_location(LocationName.cartridge_8), 
-             lambda state: sum(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 2)
-    set_rule(world.get_location(LocationName.module_5), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]))
-    set_rule(world.get_location(LocationName.aqueduct_2), 
-             lambda state: any(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]))
-    set_rule(world.get_location(LocationName.aqueduct_3), 
-             lambda state: sum(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) == 2 or (world.options.rocket_jumps and sum(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 2))
-    
-    #Heater Logic
-    set_rule(world.get_region(RegionName.region_4).entrances[0],
-             lambda state: state.has(ItemName.module_spinjump, world.player) 
-             or world.options.rocket_jumps == "single"
-             or world.options.rocket_jumps == "chains")
-    set_rule(world.get_location(LocationName.healthkit_7), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) or world.options.rocket_jumps)
-    set_rule(world.get_location(LocationName.healthkit_8), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) or world.options.rocket_jumps)
-    set_rule(world.get_location(LocationName.cartridge_9), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) or world.options.rocket_jumps)
-    set_rule(world.get_location(LocationName.cartridge_10), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) or world.options.rocket_jumps)
-    set_rule(world.get_location(LocationName.cartridge_11), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) or world.options.rocket_jumps)
-    set_rule(world.get_location(LocationName.module_6), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) or world.options.rocket_jumps)
-    set_rule(world.get_location(LocationName.module_7), 
-             lambda state: sum(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) >= 2 or world.options.rocket_jumps)
-    set_rule(world.get_location(LocationName.heater_3), 
-             lambda state: sum(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) >= 2)
-    set_rule(world.get_location(LocationName.heater_2), 
-             lambda state: any(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]))
-    
-    #Ventilation logic
-    set_rule(world.get_region(RegionName.region_5).entrances[0],
-        lambda state: (sum(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ]) >= 3 and sum(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ]) >= 3) or world.options.tiny_mech)
-    set_rule(world.get_location(LocationName.healthkit_9), 
-             lambda state: sum(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]))
-    set_rule(world.get_location(LocationName.cartridge_12), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]))
-    set_rule(world.get_location(LocationName.cartridge_13), 
-             lambda state: all(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]))
-    set_rule(world.get_location(LocationName.module_8), 
-             lambda state: any(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]))
-    set_rule(world.get_location(LocationName.vent_2), 
-             lambda state: any(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]))
-    set_rule(world.get_location(LocationName.vent_3), 
-             lambda state: any(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]))
-    
-    #Incubator logic
-    set_rule(world.get_region(RegionName.region_6).entrances[0],
-        lambda state: state.has(ItemName.module_decoder, world.player) 
-             and all(state.has(item, world.player) for item in [
-                ItemName.progressive_vent_1, ItemName.progressive_vent_2, ItemName.progressive_vent_3
-             ]) and all(state.has(item, world.player) for item in [
-                ItemName.progressive_heater_1, ItemName.progressive_heater_2, ItemName.progressive_heater_3
-             ])
-             and all(state.has(item, world.player) for item in [
-                ItemName.progressive_aqueduct_1, ItemName.progressive_aqueduct_2, ItemName.progressive_aqueduct_3
-             ])
-             and state.has(ItemName.module_decoder, world.player))
-    set_rule(world.get_location(LocationName.healthkit_10), 
-            lambda state: state.has(ItemName.module_spinjump, world.player) 
-               and state.has(ItemName.module_hopper, world.player) and state.has(ItemName.module_phase, world.player))
-    
-    
-    
-    
-    
-    
-    
-    
+    # Location logic dictionary
+    location_logic: Dict[str, Any] = {
+        # LocationName.loc_healthkit_landing_site_west: lambda state: True,
+        LocationName.loc_healthkit_landing_site_east:
+            lambda state: state.has(ItemName.module_missile, player),
+        LocationName.loc_healthkit_nexus_west:
+            lambda state: state.has(ItemName.module_spinjump, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_healthkit_nexus_east:
+            lambda state: state.has(ItemName.module_spinjump, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_healthkit_aqueducts_west:
+            lambda state: state.has_any(ItemName.ProgressiveAqueducts, player)
+                          or world.options.water_mech,
+        LocationName.loc_healthkit_aqueducts_east:
+            lambda state: state.has_all(ItemName.ProgressiveAqueducts, player),
+        LocationName.loc_healthkit_heater_core_west:
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_healthkit_heater_core_east:
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_healthkit_ventilation:
+            lambda state: state.has_any(ItemName.ProgressiveVentilation, player),
+        LocationName.loc_healthkit_incubator:
+            lambda state: state.has_all([ItemName.module_spinjump,
+                                         ItemName.module_hopper,
+                                         ItemName.module_phase], player),
+
+        LocationName.loc_cartridge_bark:
+            lambda state: state.has(ItemName.module_missile, player),
+        LocationName.loc_cartridge_nicotine:
+            lambda state: state.has_all([ItemName.module_missile,
+                                         ItemName.module_spinjump], player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_cartridge_coffee_stain:
+            lambda state: state.has_from_list(ItemName.ProgressiveAqueducts, player, 2)
+                          or world.options.water_mech,
+        LocationName.loc_cartridge_urine:
+            lambda state: state.has(ItemName.module_spinjump, player)
+                          or (state.has(ItemName.module_coolant, player) and world.options.rocket_jumps)
+                          or world.options.precise_tricks,
+        LocationName.loc_cartridge_swamp_matcha:
+            lambda state: (state.has_all(ItemName.ProgressiveVentilation, player) and
+                          (state.has(ItemName.module_spinjump, player) or world.options.rocket_jumps)) or
+                          ((state.has(ItemName.module_spinjump, player) or world.options.rocket_jumps) and
+                          world.options.precise_tricks),
+        LocationName.loc_cartridge_port:
+            lambda state: state.has_all(ItemName.ProgressiveAqueducts, player)
+                          and state.has(ItemName.module_spinjump, player),
+        LocationName.loc_cartridge_goop:
+            lambda state: state.has_all(ItemName.ProgressiveAqueducts, player)
+                          and state.has(ItemName.module_spinjump, player),
+        LocationName.loc_cartridge_starboard:
+            lambda state: state.has_from_list(ItemName.ProgressiveAqueducts, player, 2),
+        LocationName.loc_cartridge_virtual_cat:
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_cartridge_meowtrix:
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_cartridge_chewed_gum:
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_cartridge_gris:
+            lambda state: state.has_all(ItemName.ProgressiveVentilation, player),
+        LocationName.loc_cartridge_grape:
+            lambda state: state.has_all(ItemName.ProgressiveVentilation, player),
+        # LocationName.loc_cartridge_tamagato: lambda state: True,
+
+        # LocationName.loc_module_missile: lambda state: True,
+        LocationName.loc_module_decoder:
+            lambda state: state.has_all(ItemName.ProgressiveAqueducts, player) and
+                          state.has_all(ItemName.ProgressiveHeaterCore, player) and
+                          state.has_all(ItemName.ProgressiveVentilation, player) and
+                          state.has(ItemName.module_spinjump, player),
+        LocationName.loc_module_repeater:
+            lambda state: state.has_from_list(ItemName.Cartridges, player, 7),
+        LocationName.loc_module_hopper:
+            lambda state: state.has_from_list(ItemName.Cartridges, player, 14),
+        LocationName.loc_module_spinjump:
+            lambda state: state.has_all(ItemName.ProgressiveAqueducts, player),
+        LocationName.loc_module_coolant:
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
+                          or world.options.rocket_jumps,
+        LocationName.loc_module_phase:
+            lambda state: state.has_from_list(ItemName.ProgressiveHeaterCore, player, 2)
+                          or world.options.rocket_jumps,
+        LocationName.loc_module_bigshot:
+            lambda state: state.has_any(ItemName.ProgressiveVentilation, player),
+
+        # LocationName.loc_progressive_aqueducts_1: lambda state: True,
+        LocationName.loc_progressive_aqueducts_2:
+            lambda state: state.has_any(ItemName.ProgressiveAqueducts, player),
+        LocationName.loc_progressive_aqueducts_3:
+            lambda state: (state.has_from_list(ItemName.ProgressiveAqueducts, player, 2)
+                           and not state.has_from_list(ItemName.ProgressiveAqueducts, player, 3))
+                          or (state.has_from_list(ItemName.ProgressiveAqueducts, player, 2)
+                              and world.options.rocket_jumps),
+
+        # LocationName.loc_progressive_heater_core_1: lambda state: True,
+        LocationName.loc_progressive_heater_core_2:
+            lambda state: state.has_any(ItemName.ProgressiveHeaterCore, player),
+        LocationName.loc_progressive_heater_core_3:
+            lambda state: state.has_from_list(ItemName.ProgressiveHeaterCore, player, 2),
+
+        # LocationName.loc_progressive_ventilation_1: lambda state: True,
+        LocationName.loc_progressive_ventilation_2:
+            lambda state: state.has_any(ItemName.ProgressiveVentilation, player),
+        LocationName.loc_progressive_ventilation_3:
+            lambda state: state.has_from_list(ItemName.ProgressiveVentilation, player, 2)
+    }
+
+    region_logic: Dict[str, Any] = {
+        RegionName.region_nexus:
+            lambda state: state.has(ItemName.module_missile, player),
+        RegionName.region_heater_core:
+            lambda state: state.has(ItemName.module_spinjump, player)
+                          or world.options.rocket_jumps,
+        RegionName.region_ventilation:
+            lambda state: state.has_all(ItemName.ProgressiveAqueducts, player)
+                          and (state.has_all(ItemName.ProgressiveHeaterCore, player)
+                               or world.options.small_mech),
+        RegionName.region_incubator:
+            lambda state: state.has_all(ItemName.ProgressiveAqueducts, player) and
+                          state.has_all(ItemName.ProgressiveHeaterCore, player) and
+                          state.has_all(ItemName.ProgressiveVentilation, player) and
+                          state.has(ItemName.module_decoder, player)
+    }
+
+    for location in location_logic:
+        set_rule(world.get_location(location), location_logic[location])
+
+    for region in region_logic:
+        set_rule(world.get_region(region).entrances[0], region_logic[region])

@@ -2,7 +2,7 @@ from typing import List
 
 from BaseClasses import ItemClassification, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
-from .Items import GatoRobotoItem, item_table, modules_item_data_table, cartidges_item_data_table
+from .Items import GatoRobotoItem, item_table, modules_item_data_table, cartridges_item_data_table
 from .Items import (heater_events_item_data_table, 
                     aqueduct_events_item_data_table, 
                     vent_events_item_data_table, 
@@ -14,9 +14,8 @@ from .Locations import (GatoRobotoLocation,
                         cartridge_location_data_table, 
                         module_location_data_table, 
                         event_location_data_table)
-from .Names import ItemName
+from .Names import ItemName, LocationName
 from .Options import GatoRobotoOptions, gatoroboto_option_groups
-from multiprocessing import Process
 from worlds.LauncherComponents import Type, launch_subprocess, Component, icon_paths, components
 from .Presets import gatoroboto_options_presets
 import Utils
@@ -35,9 +34,12 @@ def launch_client(*args):
         launch()
 
 
-components.append(Component("Gato Roboto Client", func=launch_client,
-                            component_type=Type.CLIENT, icon="kiki",
-                            supports_uri=True, game_name="Gato Roboto"))
+components.append(Component("Gato Roboto Client",
+                            func=launch_client,
+                            component_type=Type.CLIENT,
+                            icon="kiki",
+                            supports_uri=True,
+                            game_name="Gato Roboto"))
 
 icon_paths['kiki'] = Utils.user_path("worlds/gatoroboto/data", "Kiki.png")
 
@@ -46,7 +48,7 @@ def data_path(file_name: str):
     return pkgutil.get_data(__name__, f"data/{file_name}")
 
 class GatoRobotoWebWorld(WebWorld):
-    theme = "ice"
+    theme = "grass"
     
     setup_en = Tutorial(
         tutorial_name="Start Guide",
@@ -62,8 +64,12 @@ class GatoRobotoWebWorld(WebWorld):
     option_groups = gatoroboto_option_groups
     
 class GatoRobotoWorld(World):
-    """Some game description"""
-    #Class Data
+    """
+    Gato Roboto is a 2D Metroidvania Platformer where you play as a cat named Kiki attempting to save her owner after
+    they crash-land on an alien planet. Collect weapon modules as you explore the various regions of the planet, but
+    beware of irritable creatures and treacherous obstacles, and the dark secrets it holds...
+    """
+    # Class Data
     game = "Gato Roboto"
     web = GatoRobotoWebWorld()
     options_dataclass = GatoRobotoOptions
@@ -71,17 +77,19 @@ class GatoRobotoWorld(World):
     location_name_to_id = location_table
     item_name_to_id = item_table
     
-    #Instance Data
+    # Instance Data
     def create_item(self, name):
         return GatoRobotoItem(name, item_data_table[name].type, item_data_table[name].code, self.player)
     
     def create_items(self) -> None:
         item_pool: List[GatoRobotoItem] = []
-        item_count: 32
+        item_count: int = 42 # this will be useful for future updates
+        location_count: int = 42 # this will be useful for future updates
+
         item_pool += [self.create_item(name) 
                 for name in modules_item_data_table.keys()]
         item_pool += [self.create_item(name) 
-                for name in cartidges_item_data_table.keys()]
+                for name in cartridges_item_data_table.keys()]
         item_pool += [self.create_item(name) 
                 for name in healthkits_item_data_table.keys()]
         item_pool += [self.create_item(name) 
@@ -90,17 +98,17 @@ class GatoRobotoWorld(World):
                 for name in heater_events_item_data_table.keys()]
         item_pool += [self.create_item(name) 
                 for name in vent_events_item_data_table.keys()]
-        
+
         self.multiworld.itempool += item_pool
     
     def create_regions(self) -> None:
         from .Regions import region_data_table
-        #Create regions
+        # Create Regions
         for region_name in region_data_table.keys():
             region = Region(region_name, self.player, self.multiworld)
             self.multiworld.regions.append(region)
         
-        #Create locations
+        # Create Locations
         for region_name, region_data in region_data_table.items():
             region = self.multiworld.get_region(region_name, self.player)
             region.add_locations({
@@ -125,19 +133,23 @@ class GatoRobotoWorld(World):
             })
             
             region.add_exits(region_data_table[region_name].connecting_regions)
-        
-        #Victory logic
-        victory_region = self.get_region(RegionName.region_7)
+
+        if not self.options.rocket_jumps:
+            aqueducts_3 = self.get_location(LocationName.loc_progressive_aqueducts_3)
+            aqueducts_3.place_locked_item(GatoRobotoItem(ItemName.progressive_aqueducts_3,
+                                                         ItemClassification.progression,
+                                                         10239, self.player))
+
+        # Victory Logic
+        victory_region = self.get_region(RegionName.region_laboratory)
         victory_location = GatoRobotoLocation(self.player, "Gary Defeated", None, victory_region)
-        victory_location.place_locked_item(GatoRobotoItem("Victory",  
-                                                            ItemClassification.progression, 
-                                                            None, 
-                                                            self.player))
+        victory_location.place_locked_item(GatoRobotoItem("Victory",  ItemClassification.progression, None,
+                                                          self.player))
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         victory_region.locations.append(victory_location)
             
     def get_filler_item_name(self):
-        return ItemName.healthkit
+        return ItemName.healthkit # not sure what this is doing
     
     def set_rules(self) -> None:
         from .Rules import set_rules
@@ -146,5 +158,7 @@ class GatoRobotoWorld(World):
     def fill_slot_data(self):
         return {
             "rocket_jumps": self.options.rocket_jumps.value,
-            "logic_difficulty": self.options.logic_difficulty.value
+            "precise_tricks": self.options.precise_tricks.value,
+            "water_mech": self.options.water_mech.value,
+            "small_mech": self.options.small_mech.value
         }
