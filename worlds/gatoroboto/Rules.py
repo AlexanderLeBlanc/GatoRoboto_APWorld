@@ -37,7 +37,7 @@ def set_rules(world: GatoRobotoWorld):
         # Aqueducts East Healthkit
         LocationName.loc_healthkit_aqueducts_east:
             lambda state: state.has_all(ItemName.ProgressiveAqueducts, player)
-                          and state.has(ItemName.module_spinjump),
+                          and state.has(ItemName.module_spinjump, player),
 
         # Heater Core West Healthkit
         LocationName.loc_healthkit_heater_core_west:
