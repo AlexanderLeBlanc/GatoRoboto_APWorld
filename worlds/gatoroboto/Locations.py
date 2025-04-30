@@ -54,11 +54,11 @@ cartridge_location_data_table: Dict[str, GatoRobotoLocationData] = {
     LocationName.loc_cartridge_starboard:
         GatoRobotoLocationData(RegionName.region_aqueducts, gatoroboto_base_id + 2106),
     LocationName.loc_cartridge_virtual_cat:
-        GatoRobotoLocationData(RegionName.region_heater_core, gatoroboto_base_id + 1119),
+        GatoRobotoLocationData(RegionName.region_heater_core, gatoroboto_base_id + 1318),
     LocationName.loc_cartridge_meowtrix:
         GatoRobotoLocationData(RegionName.region_heater_core, gatoroboto_base_id + 414),
     LocationName.loc_cartridge_chewed_gum:
-        GatoRobotoLocationData(RegionName.region_heater_core, gatoroboto_base_id + 1915),
+        GatoRobotoLocationData(RegionName.region_heater_core, gatoroboto_base_id + 1916),
     LocationName.loc_cartridge_gris:
         GatoRobotoLocationData(RegionName.region_ventilation, gatoroboto_base_id + 1614),
     LocationName.loc_cartridge_grape:

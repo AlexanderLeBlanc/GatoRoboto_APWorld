@@ -78,7 +78,7 @@ class GatoRobotoWorld(World):
     item_name_to_id = item_table
     
     # Instance Data
-    def create_item(self, name):
+    def create_item(self, name) -> GatoRobotoItem:
         return GatoRobotoItem(name, item_data_table[name].type, item_data_table[name].code, self.player)
     
     def create_items(self) -> None:
@@ -98,6 +98,20 @@ class GatoRobotoWorld(World):
                 for name in heater_events_item_data_table.keys()]
         item_pool += [self.create_item(name) 
                 for name in vent_events_item_data_table.keys()]
+
+        if not self.options.rocket_jumps:
+            item_pool.remove(self.create_item(ItemName.progressive_aqueducts_3))
+            aqueducts_3 = self.get_location(LocationName.loc_progressive_aqueducts_3)
+            aqueducts_3.place_locked_item(GatoRobotoItem(ItemName.progressive_aqueducts_3,
+                                                         ItemClassification.progression,
+                                                         10239, self.player))
+
+        # Fix for Heater Core logic breaking bosses
+        item_pool.remove(self.create_item(ItemName.progressive_heater_core_3))
+        heater_core_3 = self.get_location(LocationName.loc_progressive_heater_core_3)
+        heater_core_3.place_locked_item(GatoRobotoItem(ItemName.progressive_heater_core_3,
+                                                     ItemClassification.progression,
+                                                     10256, self.player))
 
         self.multiworld.itempool += item_pool
     
@@ -134,16 +148,10 @@ class GatoRobotoWorld(World):
             
             region.add_exits(region_data_table[region_name].connecting_regions)
 
-        if not self.options.rocket_jumps:
-            aqueducts_3 = self.get_location(LocationName.loc_progressive_aqueducts_3)
-            aqueducts_3.place_locked_item(GatoRobotoItem(ItemName.progressive_aqueducts_3,
-                                                         ItemClassification.progression,
-                                                         10239, self.player))
-
         # Victory Logic
         victory_region = self.get_region(RegionName.region_laboratory)
-        victory_location = GatoRobotoLocation(self.player, "Gary Defeated", None, victory_region)
-        victory_location.place_locked_item(GatoRobotoItem("Victory",  ItemClassification.progression, None,
+        victory_location = GatoRobotoLocation(self.player, "Gary Defeated", 11319, victory_region)
+        victory_location.place_locked_item(GatoRobotoItem("Victory",  ItemClassification.progression, 10999,
                                                           self.player))
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
         victory_region.locations.append(victory_location)

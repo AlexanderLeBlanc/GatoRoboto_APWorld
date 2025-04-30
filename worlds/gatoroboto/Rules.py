@@ -41,13 +41,11 @@ def set_rules(world: GatoRobotoWorld):
 
         # Heater Core West Healthkit
         LocationName.loc_healthkit_heater_core_west:
-            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
-                          or world.options.rocket_jumps,
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player),
 
         # Heater Core East Healthkit
         LocationName.loc_healthkit_heater_core_east:
-            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
-                          or world.options.rocket_jumps,
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player),
 
         # Ventilation Healthkit
         LocationName.loc_healthkit_ventilation:
@@ -69,7 +67,7 @@ def set_rules(world: GatoRobotoWorld):
         LocationName.loc_cartridge_nicotine:
             lambda state: state.has_all([ItemName.module_missile,
                                          ItemName.module_spinjump], player)
-                          or world.options.rocket_jumps,
+                          or (world.options.rocket_jumps and state.has(ItemName.module_missile, player)),
 
         # Coffee Stain Cartridge
         LocationName.loc_cartridge_coffee_stain:
@@ -106,18 +104,15 @@ def set_rules(world: GatoRobotoWorld):
 
         # Virtual Cat Cartridge
         LocationName.loc_cartridge_virtual_cat:
-            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
-                          or world.options.rocket_jumps,
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player),
 
         # Meowtrix Cartridge
         LocationName.loc_cartridge_meowtrix:
-            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
-                          or world.options.rocket_jumps,
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player),
 
         # Chewed Gum Cartridge
         LocationName.loc_cartridge_chewed_gum:
-            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
-                          or world.options.rocket_jumps,
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player),
 
         # Gris Cartridge
         LocationName.loc_cartridge_gris:
@@ -140,7 +135,10 @@ def set_rules(world: GatoRobotoWorld):
             lambda state: state.has_all(ItemName.ProgressiveAqueducts, player) and
                           state.has_all(ItemName.ProgressiveHeaterCore, player) and
                           state.has_all(ItemName.ProgressiveVentilation, player) and
-                          state.has(ItemName.module_spinjump, player),
+                          state.has(ItemName.module_spinjump, player) or
+                          (world.options.precise_tricks and
+                          state.has(ItemName.module_spinjump, player) and
+                          state.has(ItemName.module_missile, player)),
 
         # Repeater Module
         LocationName.loc_module_repeater:
@@ -156,13 +154,11 @@ def set_rules(world: GatoRobotoWorld):
 
         # Coolant Module
         LocationName.loc_module_coolant:
-            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player)
-                          or world.options.rocket_jumps,
+            lambda state: state.has_all(ItemName.ProgressiveHeaterCore, player),
 
         # Phase Module
         LocationName.loc_module_phase:
-            lambda state: state.has_from_list(ItemName.ProgressiveHeaterCore, player, 2)
-                          or world.options.rocket_jumps,
+            lambda state: state.has_from_list(ItemName.ProgressiveHeaterCore, player, 2),
 
         # Bigshot Module
         LocationName.loc_module_bigshot:

@@ -62,7 +62,7 @@ heater_events_item_data_table: Dict[str, GatoRobotoItemData] = {
 aqueduct_events_item_data_table: Dict[str, GatoRobotoItemData] = {
     ItemName.progressive_aqueducts_1: GatoRobotoItemData(gato_roboto_base_id + 237, ItemClassification.progression),
     ItemName.progressive_aqueducts_2: GatoRobotoItemData(gato_roboto_base_id + 238, ItemClassification.progression),
-    # ItemName.progressive_aqueducts_3: GatoRobotoItemData(gato_roboto_base_id + 239, ItemClassification.progression),
+    ItemName.progressive_aqueducts_3: GatoRobotoItemData(gato_roboto_base_id + 239, ItemClassification.progression),
 }
 
 vent_events_item_data_table: Dict[str, GatoRobotoItemData] = {
