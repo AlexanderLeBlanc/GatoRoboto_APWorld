@@ -106,13 +106,6 @@ class GatoRobotoWorld(World):
                                                          ItemClassification.progression,
                                                          10239, self.player))
 
-        # Fix for Heater Core logic breaking bosses
-        item_pool.remove(self.create_item(ItemName.progressive_heater_core_3))
-        heater_core_3 = self.get_location(LocationName.loc_progressive_heater_core_3)
-        heater_core_3.place_locked_item(GatoRobotoItem(ItemName.progressive_heater_core_3,
-                                                     ItemClassification.progression,
-                                                     10256, self.player))
-
         self.multiworld.itempool += item_pool
     
     def create_regions(self) -> None:
